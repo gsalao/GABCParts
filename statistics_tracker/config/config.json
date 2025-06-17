@@ -1,0 +1,18 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/config.2.0.schema.json",
+  "version": "2.0",
+  "bundles": {
+    "statistics-tracker-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/statisticsTracker/StatisticsTrackerWebPart.js",
+          "manifest": "./src/webparts/statisticsTracker/StatisticsTrackerWebPart.manifest.json"
+        }
+      ]
+    }
+  },
+  "externals": {},
+  "localizedResources": {
+    "StatisticsTrackerWebPartStrings": "lib/webparts/statisticsTracker/loc/{locale}.js"
+  }
+}

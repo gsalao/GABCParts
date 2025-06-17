@@ -1,0 +1,18 @@
+{
+  "@microsoft/generator-sharepoint": {
+    "plusBeta": false,
+    "isCreatingSolution": true,
+    "nodeVersion": "22.16.0",
+    "sdksVersions": {},
+    "version": "1.21.1",
+    "libraryName": "statistics-tracker",
+    "libraryId": "90ca76ae-4d2b-40bf-bf27-b5b28c40acee",
+    "environment": "spo",
+    "packageManager": "npm",
+    "solutionName": "StatisticsTracker",
+    "solutionShortDescription": "StatisticsTracker description",
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "componentType": "webpart"
+  }
+}

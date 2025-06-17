@@ -248,7 +248,7 @@ const Faq = (props: IFaqProps) => {
 
             {isOpen && (
               <div style={{ padding: 24 }}>
-                <h3 style={{ borderBottom: "3px solid #FFCC00", paddingBottom: 6, color: "#000" }}>TestDescription</h3>
+                <h3 style={{ borderBottom: "3px solid #FFCC00", paddingBottom: 6, color: "#000" }}>Description</h3>
                 <p>{item.Body}</p>
 
                 <hr style={{ margin: "20px 0", border: "1px solid #ccc" }} />

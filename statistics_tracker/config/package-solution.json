@@ -1,0 +1,40 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/package-solution.schema.json",
+  "solution": {
+    "name": "statistics-tracker-client-side-solution",
+    "id": "90ca76ae-4d2b-40bf-bf27-b5b28c40acee",
+    "version": "1.0.0.0",
+    "includeClientSideAssets": true,
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "developer": {
+      "name": "",
+      "websiteUrl": "",
+      "privacyUrl": "",
+      "termsOfUseUrl": "",
+      "mpnId": "Undefined-1.21.1"
+    },
+    "metadata": {
+      "shortDescription": {
+        "default": "StatisticsTracker description"
+      },
+      "longDescription": {
+        "default": "StatisticsTracker description"
+      },
+      "screenshotPaths": [],
+      "videoUrl": "",
+      "categories": []
+    },
+    "features": [
+      {
+        "title": "statistics-tracker Feature",
+        "description": "The feature that activates elements of the statistics-tracker solution.",
+        "id": "1cf47607-8776-443b-b84c-813a64859baf",
+        "version": "1.0.0.0"
+      }
+    ]
+  },
+  "paths": {
+    "zippedPackage": "solution/statistics-tracker.sppkg"
+  }
+}

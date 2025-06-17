@@ -1,0 +1,40 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/package-solution.schema.json",
+  "solution": {
+    "name": "grades-tracker-client-side-solution",
+    "id": "fe607a79-342a-4887-838c-fd6236623dd4",
+    "version": "1.0.0.0",
+    "includeClientSideAssets": true,
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "developer": {
+      "name": "",
+      "websiteUrl": "",
+      "privacyUrl": "",
+      "termsOfUseUrl": "",
+      "mpnId": "Undefined-1.21.1"
+    },
+    "metadata": {
+      "shortDescription": {
+        "default": "GradesTracker description"
+      },
+      "longDescription": {
+        "default": "GradesTracker description"
+      },
+      "screenshotPaths": [],
+      "videoUrl": "",
+      "categories": []
+    },
+    "features": [
+      {
+        "title": "grades-tracker Feature",
+        "description": "The feature that activates elements of the grades-tracker solution.",
+        "id": "dc615c9a-2c24-4cb4-94b2-ee6ccf1731a7",
+        "version": "1.0.0.0"
+      }
+    ]
+  },
+  "paths": {
+    "zippedPackage": "solution/grades-tracker.sppkg"
+  }
+}

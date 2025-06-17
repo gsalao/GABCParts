@@ -1,0 +1,18 @@
+{
+  "@microsoft/generator-sharepoint": {
+    "plusBeta": false,
+    "isCreatingSolution": true,
+    "nodeVersion": "20.11.1",
+    "sdksVersions": {},
+    "version": "1.21.1",
+    "libraryName": "module-tracker",
+    "libraryId": "0c4cb62e-8fe2-4a4a-84d2-4632362abdca",
+    "environment": "spo",
+    "packageManager": "npm",
+    "solutionName": "ModuleTracker",
+    "solutionShortDescription": "ModuleTracker description",
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "componentType": "webpart"
+  }
+}

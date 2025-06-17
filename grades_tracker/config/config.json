@@ -1,0 +1,18 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/config.2.0.schema.json",
+  "version": "2.0",
+  "bundles": {
+    "grades-tracker-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/gradesTracker/GradesTrackerWebPart.js",
+          "manifest": "./src/webparts/gradesTracker/GradesTrackerWebPart.manifest.json"
+        }
+      ]
+    }
+  },
+  "externals": {},
+  "localizedResources": {
+    "GradesTrackerWebPartStrings": "lib/webparts/gradesTracker/loc/{locale}.js"
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/package-solution.schema.json",
+  "solution": {
+    "name": "module-tracker-client-side-solution",
+    "id": "0c4cb62e-8fe2-4a4a-84d2-4632362abdca",
+    "version": "1.0.0.0",
+    "includeClientSideAssets": true,
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "developer": {
+      "name": "",
+      "websiteUrl": "",
+      "privacyUrl": "",
+      "termsOfUseUrl": "",
+      "mpnId": "Undefined-1.21.1"
+    },
+    "metadata": {
+      "shortDescription": {
+        "default": "ModuleTracker description"
+      },
+      "longDescription": {
+        "default": "ModuleTracker description"
+      },
+      "screenshotPaths": [],
+      "videoUrl": "",
+      "categories": []
+    },
+    "features": [
+      {
+        "title": "module-tracker Feature",
+        "description": "The feature that activates elements of the module-tracker solution.",
+        "id": "fc765c1f-24d6-47a8-a94d-02255dcfce9c",
+        "version": "1.0.0.0"
+      }
+    ]
+  },
+  "paths": {
+    "zippedPackage": "solution/module-tracker.sppkg"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "@microsoft/generator-sharepoint": {
+    "plusBeta": false,
+    "isCreatingSolution": true,
+    "nodeVersion": "22.16.0",
+    "sdksVersions": {},
+    "version": "1.21.1",
+    "libraryName": "grades-tracker",
+    "libraryId": "fe607a79-342a-4887-838c-fd6236623dd4",
+    "environment": "spo",
+    "packageManager": "npm",
+    "solutionName": "GradesTracker",
+    "solutionShortDescription": "GradesTracker description",
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "componentType": "webpart"
+  }
+}
