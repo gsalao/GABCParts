@@ -16,6 +16,47 @@ const Faq = (props: IFaqProps) => {
   const [checkboxClicked, setCheckboxClicked] = useState<{ [key: string]: boolean }>({});
   const [expanded, setExpanded] = useState<{ [key: number]: boolean }>({});
 
+  const [quizScores, setQuizScores] = useState<{ [key: number]: number }>({});
+  const [examScores, setExamScores] = useState<{ [key: number]: number }>({});
+  const [quizTimeout, setQuizTimeout] = useState<{ [key: number]: boolean }>({});
+  const [examTimeout, setExamTimeout] = useState<{ [key: number]: boolean }>({});
+
+  const handleQuizSubmit = (moduleId: number) => {
+    const faqItem = faqItems.find((item) => item.Id === moduleId);
+    const totalItems = + (faqItem?.Test?.Url ? 1 : 0) + (faqItem?.Exam?.Url ? 1 : 0) + (faqItem?.Videos ? faqItem?.Videos.length : 0);
+
+    if (quizScores[moduleId] >= 3) {
+      console.log(faqItems.length)
+      updateProgress(moduleId, totalItems, `test-${moduleId}`);
+    } else {
+      setQuizTimeout(prev => ({ ...prev, [moduleId]: true }));
+      setTimeout(() => {
+        setQuizTimeout(prev => ({ ...prev, [moduleId]: false }));
+      }, 10000);
+    }
+  };  
+
+  const handleExamSubmit = (moduleId: number) => {
+    const faqItem = faqItems.find((item) => item.Id === moduleId);
+    const totalItems = + (faqItem?.Test?.Url ? 1 : 0) + (faqItem?.Exam?.Url ? 1 : 0) + (faqItem?.Videos ? faqItem?.Videos.length : 0);
+
+    if (examScores[moduleId] >= 6) {
+      updateProgress(moduleId, totalItems, `exam-${moduleId}`);
+
+      // Set next module progress to 100% since exam is passed
+      const nextModule = faqItems.find(f => f.ModuleNumber === faqItems[moduleId].ModuleNumber + 1);
+      if (nextModule) {
+        setProgress(prev => ({ ...prev, [nextModule.Id]: 100 }));
+      }
+    } else {
+      setExamTimeout(prev => ({ ...prev, [moduleId]: true }));
+      setTimeout(() => {
+        setExamTimeout(prev => ({ ...prev, [moduleId]: false }));
+      }, 10000);
+    }
+  };
+
+
   useEffect(() => {
     const getFAQItems = async (): Promise<void> => {
       if (!_sp) return;
@@ -61,15 +102,13 @@ const Faq = (props: IFaqProps) => {
   return (
     <>
       {faqItems.map((item, moduleIdx) => {
-        const totalItems = item.Videos.length + 1 + (item.Exam ? 1 : 0);
+        const totalItems = item.Videos.length + (item.Test?.Url ? 1 : 0) + (item.Exam?.Url ? 1 : 0);
+
         const moduleProgress = progress[item.Id] || 0;
         const isOpen = expanded[item.Id] || false;
 
         const prevModule = moduleIdx > 0 ? faqItems[moduleIdx - 1] : null;
         const isModuleLocked = prevModule && (progress[prevModule.Id] || 0) < 100;
-
-        console.log(prevModule)
-        console.log(isModuleLocked)
 
         const allVideosDone = item.Videos.every(v => checkboxClicked[v.Id]);
         const isQuizDone = checkboxClicked[`test-${item.Id}`];
@@ -134,7 +173,7 @@ const Faq = (props: IFaqProps) => {
 
             {isOpen && (
               <div style={{ padding: 24 }}>
-                <h3 style={{ borderBottom: "3px solid #FFCC00", paddingBottom: 6, color: "#000" }}>Description</h3>
+                <h3 style={{ borderBottom: "3px solid #FFCC00", paddingBottom: 6, color: "#000" }}>TestDescription</h3>
                 <p>{item.Body}</p>
 
                 <hr style={{ margin: "20px 0", border: "1px solid #ccc" }} />
@@ -180,16 +219,31 @@ const Faq = (props: IFaqProps) => {
                 <hr style={{ margin: "20px 0", border: "1px solid #ccc" }} />
 
                 <h3 style={{ borderBottom: "3px solid #FFCC00", paddingBottom: 6, color: "#000" }}>Quiz</h3>
-                {item.Test.Url ? (
+                {item.Test?.Url ? (
                   allVideosDone ? (
-                    <a
-                      href={item.Test.Url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      onClick={() => updateProgress(item.Id, totalItems, `test-${item.Id}`)}
-                    >
-                      {item.Test.Title}
-                    </a>
+                    <>
+                      <a
+                        href={item.Test.Url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {item.Test.Title}
+                      </a>
+
+                      {/* Quiz Score Input Box - Only displayed if there's a quiz URL */}
+                      <div style={{ marginTop: "8px" }}>
+                        <input
+                          type="number"
+                          placeholder="Score"
+                          min="0"
+                          max="5"
+                          onChange={(e) => setQuizScores(prev => ({ ...prev, [item.Id]: Number(e.target.value) }))}
+                          disabled={quizTimeout[item.Id]}
+                        />
+                        <button onClick={() => handleQuizSubmit(item.Id)} disabled={quizTimeout[item.Id]}>Submit</button>
+                        {quizTimeout[item.Id] && <p>Try again in 10 seconds!</p>}
+                      </div>
+                    </>
                   ) : (
                     <p style={{ fontStyle: "italic", color: "#999" }}>Complete all videos to unlock the quiz</p>
                   )
@@ -197,21 +251,36 @@ const Faq = (props: IFaqProps) => {
                   <p>No test available.</p>
                 )}
 
-                {item.Exam && item.Exam.Url && (
+                {item.Exam?.Url && (
                   <>
                     <hr style={{ margin: "20px 0", border: "1px solid #ccc" }} />
 
                     <h3 style={{ borderBottom: "3px solid #FFCC00", paddingBottom: 6, color: "#000" }}>Exam</h3>
-                    
+
                     {isExamUnlocked ? (
-                      <a
-                        href={item.Exam.Url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        onClick={() => updateProgress(item.Id, totalItems, `exam-${item.Id}`)}
-                      >
-                        {item.Exam.Title}
-                      </a>
+                      <>
+                        <a
+                          href={item.Exam.Url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {item.Exam.Title}
+                        </a>
+
+                        {/* Show input form only if exam is unlocked */}
+                        <div style={{ marginTop: "8px" }}>
+                          <input
+                            type="number"
+                            placeholder="Score"
+                            min="0"
+                            max="10"
+                            onChange={(e) => setExamScores(prev => ({ ...prev, [item.Id]: Number(e.target.value) }))}
+                            disabled={examTimeout[item.Id]}
+                          />
+                          <button onClick={() => handleExamSubmit(item.Id)} disabled={examTimeout[item.Id]}>Submit</button>
+                          {examTimeout[item.Id] && <p>⏳ Try again in 10 seconds!</p>}
+                        </div>
+                      </>
                     ) : (
                       <p style={{ fontStyle: "italic", color: "#999" }}>
                         Complete the quiz to unlock the exam
