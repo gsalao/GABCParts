@@ -65,8 +65,11 @@ const Faq = (props: IFaqProps) => {
         const moduleProgress = progress[item.Id] || 0;
         const isOpen = expanded[item.Id] || false;
 
-        const prevModule = faqItems.find(f => f.ModuleNumber === item.ModuleNumber - 1);
-        const isModuleLocked = item.ModuleNumber > 1 && (!prevModule || (progress[prevModule.Id] || 0) < 100);
+        const prevModule = moduleIdx > 0 ? faqItems[moduleIdx - 1] : null;
+        const isModuleLocked = prevModule && (progress[prevModule.Id] || 0) < 100;
+
+        console.log(prevModule)
+        console.log(isModuleLocked)
 
         const allVideosDone = item.Videos.every(v => checkboxClicked[v.Id]);
         const isQuizDone = checkboxClicked[`test-${item.Id}`];
