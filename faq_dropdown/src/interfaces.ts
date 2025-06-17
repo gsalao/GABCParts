@@ -10,6 +10,12 @@ export interface ITest {
   Url: string;
 }
 
+export interface IExam {
+  Id: number;
+  Title: string;
+  Url: string;
+}
+
 export interface IFAQ {
   Id: number;
   Title: string;
@@ -17,4 +23,5 @@ export interface IFAQ {
   ModuleNumber: number;
   Videos: IVideo[];
   Test: ITest;
+  Exam?: IExam;
 }
