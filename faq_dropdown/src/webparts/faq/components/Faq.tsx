@@ -134,7 +134,7 @@ const Faq = (props: IFaqProps) => {
 
             {isOpen && (
               <div style={{ padding: 24 }}>
-                <h3 style={{ borderBottom: "3px solid #FFCC00", paddingBottom: 6, color: "#000" }}>Description</h3>
+                <h3 style={{ borderBottom: "3px solid #FFCC00", paddingBottom: 6, color: "#000" }}>KendrickDescription</h3>
                 <p>{item.Body}</p>
 
                 <hr style={{ margin: "20px 0", border: "1px solid #ccc" }} />
@@ -197,26 +197,27 @@ const Faq = (props: IFaqProps) => {
                   <p>No test available.</p>
                 )}
 
-                <hr style={{ margin: "20px 0", border: "1px solid #ccc" }} />
+                {item.Exam && item.Exam.Url && (
+                  <>
+                    <hr style={{ margin: "20px 0", border: "1px solid #ccc" }} />
 
-                <h3 style={{ borderBottom: "3px solid #FFCC00", paddingBottom: 6, color: "#000" }}>Exam</h3>
-                {item.Exam?.Url ? (
-                  isExamUnlocked ? (
-                    <a
-                      href={item.Exam.Url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      onClick={() => updateProgress(item.Id, totalItems, `exam-${item.Id}`)}
-                    >
-                      {item.Exam.Title}
-                    </a>
-                  ) : (
-                    <p style={{ fontStyle: "italic", color: "#999" }}>
-                      Complete the quiz to unlock the exam
-                    </p>
-                  )
-                ) : (
-                  <p>No exam provided for this module.</p>
+                    <h3 style={{ borderBottom: "3px solid #FFCC00", paddingBottom: 6, color: "#000" }}>Exam</h3>
+                    
+                    {isExamUnlocked ? (
+                      <a
+                        href={item.Exam.Url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={() => updateProgress(item.Id, totalItems, `exam-${item.Id}`)}
+                      >
+                        {item.Exam.Title}
+                      </a>
+                    ) : (
+                      <p style={{ fontStyle: "italic", color: "#999" }}>
+                        Complete the quiz to unlock the exam
+                      </p>
+                    )}
+                  </>
                 )}
               </div>
             )}
