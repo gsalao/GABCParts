@@ -1,5 +1,3 @@
-// Faq.tsx
-
 import * as React from "react";
 import { useEffect, useState } from "react";
 import { IFaqProps } from "./IFaqProps";
@@ -21,13 +19,85 @@ const Faq = (props: IFaqProps) => {
   const [quizTimeout, setQuizTimeout] = useState<{ [key: number]: boolean }>({});
   const [examTimeout, setExamTimeout] = useState<{ [key: number]: boolean }>({});
 
-  const handleQuizSubmit = (moduleId: number) => {
+  // note: _0x0020_ represents the space between column Module titles
+
+  const logModuleProgress = async (moduleId: number, moduleTitle: string, progress: number) => {
+    try {
+      const list = _sp.web.lists.getByTitle("Module Progress List");
+
+      // Fetch all items and find existing module entry
+      const allItems = await list.items();
+      const existingItems = allItems.filter(item => item.ModuleNumber === moduleId);
+
+      // Calculate VideoProgress (number of watched videos vs total)
+      const faqItem = faqItems.find(item => item.Id === moduleId);
+      const totalVideos = faqItem?.Videos?.length || 0;
+      const moduleVideoIds = faqItem?.Videos?.map(v => v.Id) || [];
+      const watchedVideos = moduleVideoIds.filter(id => videoWatched[Number(id)]);
+      const videoProgress = totalVideos > 0 ? (watchedVideos.length / totalVideos) * 100 : 0;
+
+      const updatedData = {
+        Title: moduleTitle,
+        ModuleNumber: moduleId,
+        ModuleProgress: progress,
+        VideoProgress: videoProgress, // ✅ Corrected calculation
+        QuizProgress: quizScores[moduleId] >= 3 ? 100 : 0,
+        ExamProgress: examScores[moduleId] >= 6 ? 100 : 0,
+      };
+
+      if (existingItems.length > 0) {
+        await list.items.getById(existingItems[0].Id).update(updatedData);
+        console.log(`Module ${moduleId} progress updated successfully!`);
+      } else {
+        await list.items.add(updatedData);
+        console.log(`Module ${moduleId} progress logged successfully!`);
+      }
+    } catch (error) {
+      console.error("Error logging module progress:", error);
+    }
+  };
+
+
+  const logGrades = async (moduleTitle: string, moduleId: number, quizScore?: number, examScore?: number) => {
+    try {
+      const list = _sp?.web.lists.getByTitle("Grades List");
+
+      // Fetch all items and filter for existing one with the same ModuleNumber
+      const allItems = await list.items(); 
+      const existingItems = allItems.filter(item => item.ModuleNumber === moduleId);
+
+      const updatedData = {
+        Title: moduleTitle,
+        ModuleNumber: moduleId,
+        QuizScore: quizScore ?? existingItems[0]?.QuizScore ?? null, // Preserve existing value if undefined
+        ExamScore: examScore ?? existingItems[0]?.ExamScore ?? null,
+      };
+
+      if (existingItems.length > 0) {
+        // Update existing entry
+        await list.items.getById(existingItems[0].Id).update(updatedData);
+        console.log(`Updated grades for Module ${moduleId} successfully!`);
+      } else {
+        // Add new entry
+        await list.items.add(updatedData);
+        console.log(`Grades logged successfully for Module ${moduleId}`);
+      }
+    } catch (error) {
+      console.error("Error logging grades:", error);
+    }
+  };
+
+  const handleQuizSubmit = async (moduleId: number) => {
     const faqItem = faqItems.find((item) => item.Id === moduleId);
     const totalItems = + (faqItem?.Test?.Url ? 1 : 0) + (faqItem?.Exam?.Url ? 1 : 0) + (faqItem?.Videos ? faqItem?.Videos.length : 0);
 
     if (quizScores[moduleId] >= 3) {
-      console.log(faqItems.length)
-      updateProgress(moduleId, totalItems, `test-${moduleId}`);
+      const newProgress = ((progress[moduleId] || 0) + 100 / totalItems);
+      const finalProgress = newProgress > 100 ? 100 : newProgress;  // Ensure max limit
+
+      await updateProgress(moduleId, totalItems, `test-${moduleId}`);
+      await logGrades(faqItem?.Title || "Unknown", moduleId, quizScores[moduleId]);
+      await logModuleProgress(moduleId, faqItem?.Title || "Unknown", finalProgress);
     } else {
       setQuizTimeout(prev => ({ ...prev, [moduleId]: true }));
       setTimeout(() => {
@@ -36,12 +106,17 @@ const Faq = (props: IFaqProps) => {
     }
   };  
 
-  const handleExamSubmit = (moduleId: number) => {
+  const handleExamSubmit = async (moduleId: number) => {
     const faqItem = faqItems.find((item) => item.Id === moduleId);
     const totalItems = + (faqItem?.Test?.Url ? 1 : 0) + (faqItem?.Exam?.Url ? 1 : 0) + (faqItem?.Videos ? faqItem?.Videos.length : 0);
 
     if (examScores[moduleId] >= 6) {
-      updateProgress(moduleId, totalItems, `exam-${moduleId}`);
+      const newProgress = ((progress[moduleId] || 0) + 100 / totalItems);
+      const finalProgress = newProgress > 100 ? 100 : newProgress;
+
+      await updateProgress(moduleId, totalItems, `exam-${moduleId}`);
+      await logGrades(faqItem?.Title || "Unknown", moduleId, undefined, examScores[moduleId]); // Log exam scores
+      await logModuleProgress(moduleId, faqItem?.Title || "Unknown", finalProgress);
 
       // Set next module progress to 100% since exam is passed
       const nextModule = faqItems.find(f => f.ModuleNumber === faqItems[moduleId].ModuleNumber + 1);
@@ -204,7 +279,15 @@ const Faq = (props: IFaqProps) => {
                             <input
                               type="checkbox"
                               disabled={checkboxClicked[video.Id]}
-                              onChange={() => updateProgress(item.Id, totalItems, video.Id)}
+                              onChange={() => {
+                                updateProgress(item.Id, totalItems, video.Id); // ✅ Update progress first
+
+                                // Ensure latest progress value is passed to logModuleProgress
+                                const newProgress = ((progress[item.Id] || 0) + 100 / totalItems);
+                                const finalProgress = newProgress > 100 ? 100 : newProgress; 
+
+                                logModuleProgress(item.Id, item.Title || "Unknown", finalProgress); // ✅ Log module progress next
+                              }}
                             />
                             <span style={{ marginLeft: 8 }}>Mark as Watched</span>
                           </label>
