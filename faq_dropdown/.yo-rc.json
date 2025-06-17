@@ -1,0 +1,18 @@
+{
+  "@microsoft/generator-sharepoint": {
+    "plusBeta": false,
+    "isCreatingSolution": true,
+    "nodeVersion": "22.16.0",
+    "sdksVersions": {},
+    "version": "1.21.1",
+    "libraryName": "samples",
+    "libraryId": "30c294c2-e1bd-4f84-b18f-d9885114ba8f",
+    "environment": "spo",
+    "packageManager": "npm",
+    "solutionName": "Samples",
+    "solutionShortDescription": "Samples description",
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "componentType": "webpart"
+  }
+}

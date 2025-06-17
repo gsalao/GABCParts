@@ -1,0 +1,77 @@
+@import '~@fluentui/react/dist/sass/References.scss';
+
+.userGreeting {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1em;
+  animation: fadeIn 0.4s ease-in;
+  color: "[theme:bodyText, default:#323130]";
+  color: var(--bodyText);
+
+  &.teams {
+    font-family: $ms-font-family-fallbacks;
+  }
+
+  @media screen and (max-width: 600px) {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+.profilePic,
+.fallbackAvatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid "[theme:neutralLight, default:#edebe9]";
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  transition: box-shadow 0.3s ease;
+}
+
+.profilePic:hover,
+.fallbackAvatar:hover {
+  box-shadow: 0 0 8px rgba(0, 120, 212, 0.4);
+}
+
+.fallbackAvatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: "[theme:neutralLight, default:#edebe9]";
+  color: "[theme:neutralPrimary, default:#323130]";
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+h2, p {
+  opacity: 0;
+  transform: translateY(6px);
+  animation: textFadeIn 0.4s forwards;
+}
+
+h2 {
+  margin: 0;
+  font-size: $ms-font-size-xl;
+  animation-delay: 0.2s;
+}
+
+p {
+  margin: 0.25rem 0 0;
+  font-size: $ms-font-size-m;
+  color: "[theme:neutralSecondary, default:#605e5c]";
+  animation-delay: 0.4s;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes textFadeIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

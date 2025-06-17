@@ -1,0 +1,18 @@
+{
+  "@microsoft/generator-sharepoint": {
+    "plusBeta": false,
+    "isCreatingSolution": true,
+    "nodeVersion": "20.11.1",
+    "sdksVersions": {},
+    "version": "1.21.1",
+    "libraryName": "user-greeting",
+    "libraryId": "15b6050f-66c0-4f89-9c75-ce259a27a07d",
+    "environment": "spo",
+    "packageManager": "npm",
+    "solutionName": "user-greeting",
+    "solutionShortDescription": "user-greeting description",
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "componentType": "webpart"
+  }
+}

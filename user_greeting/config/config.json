@@ -1,0 +1,18 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/config.2.0.schema.json",
+  "version": "2.0",
+  "bundles": {
+    "user-greeting-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/userGreeting/UserGreetingWebPart.js",
+          "manifest": "./src/webparts/userGreeting/UserGreetingWebPart.manifest.json"
+        }
+      ]
+    }
+  },
+  "externals": {},
+  "localizedResources": {
+    "UserGreetingWebPartStrings": "lib/webparts/userGreeting/loc/{locale}.js"
+  }
+}
