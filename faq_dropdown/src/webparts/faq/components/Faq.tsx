@@ -21,16 +21,20 @@ const Faq = (props: IFaqProps) => {
   const [quizTimeout, setQuizTimeout] = useState<{ [key: number]: boolean }>({});
   const [examTimeout, setExamTimeout] = useState<{ [key: number]: boolean }>({});
 
-  // track if quizSubmitted
   const [quizSubmitted, setQuizSubmitted] = useState<{ [key: number]: boolean }>({});
   const [examSubmitted, setExamSubmitted] = useState<{ [key: number]: boolean }>({});
 
   const [quizVisible, setQuizVisible] = useState<{ [key: number]: boolean }>({});
+  const [examVisible, setExamVisible] = useState<{ [key: number]: boolean }>({});
 
   const [watchedVideos, setWatchedVideos] = useState<{ [key: number]: { [videoId: number]: boolean } }>({});
 
   const handleQuizLinkClick = (moduleId: number) => {
     setQuizVisible(prev => ({ ...prev, [moduleId]: true }));
+  };
+
+  const handleExamLinkClick = (moduleId: number) => {
+    setExamVisible(prev => ({ ...prev, [moduleId]: true }));
   };
 
   // note: _0x0020_ represents the space between column Module titles
@@ -137,6 +141,7 @@ const Faq = (props: IFaqProps) => {
       await logModuleProgress(moduleId, faqItem?.Title || "Unknown", finalProgress);
 
       setExamSubmitted(prev => ({ ...prev, [moduleId]: true }));
+      setExamVisible(prev => ({ ...prev, [moduleId]: false }));
       // Set next module progress to 100% since exam is passed
       const nextModule = faqItems.find(f => f.ModuleNumber === faqItems[moduleId].ModuleNumber + 1);
       if (nextModule) {
@@ -144,6 +149,7 @@ const Faq = (props: IFaqProps) => {
       }
     } else {
       setExamTimeout(prev => ({ ...prev, [moduleId]: true }));
+      setExamVisible(prev => ({ ...prev, [moduleId]: false }));
       setTimeout(() => {
         setExamTimeout(prev => ({ ...prev, [moduleId]: false }));
       }, 10000);
@@ -162,11 +168,11 @@ const Faq = (props: IFaqProps) => {
           Body: item.Body,
           ModuleNumber: item["Module Number"],
           Videos: item.Videos ? JSON.parse(item.Videos) : [],
-          Test: item.Test ? JSON.parse(item.Test) : { Id: 0, Title: "No Test Available", Url: "" , PassingScore : 3 , MaximumScore : 5 },
+          Test: item.Test ? JSON.parse(item.Test) : { Id: 0, Title: "No Test Available", Url: "" , PassingScore: 0, MaximumScore: 0 },
           Exam: item.Exam ? JSON.parse(item.Exam) : undefined,
         }));
         parsed.sort((a, b) => a.ModuleNumber - b.ModuleNumber);
-        setFaqItems(parsed);
+        setFaqItems(parsed);  
       } catch (err) {
         console.error("Error fetching items:", err);
       }
@@ -239,7 +245,7 @@ const Faq = (props: IFaqProps) => {
               </span>
               <Icon
                 iconName={isOpen ? "ChevronDown" : "ChevronRight"}
-                styles={{ root: { fontSize: 20, color: "white" } }}
+                styles={{ root: { fontSize: 20, color: "white", justifyContent: "center" } }}
               />
               <div style={{ display: "flex", alignItems: "center", gap: 8, width: "40%" }}>
                 <div style={{
@@ -336,70 +342,72 @@ const Faq = (props: IFaqProps) => {
 
                 <hr style={{ margin: "20px 0", border: "1px solid #ccc" }} />
 
-                <h3 style={{ borderBottom: "3px solid #FFCC00", paddingBottom: 6, color: "#000" }}>Quiz</h3>
+                <h3 style={{ borderBottom: "3px solid #FFCC00", paddingBottom: 6, color: "#000" }}>Quiz ({item.Test.MaximumScore} Items)</h3>
                 {item.Test?.Url ? (
                   allVideosDone ? (
                     <>
-                        {/* Quiz Score Input Box - Only displayed if there's a quiz URL */}
-                        <div className={styles.quizContainer}>
-                          {/* Quiz Link - Always Visible Unless Test is Failed */}
-                          {!quizSubmitted[item.Id] && !quizTimeout[item.Id] && (
-                            <>
-                              <a
-                                href={item.Test.Url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className={styles.quizLink}
-                                onClick={() => handleQuizLinkClick(item.Id)}
+                      {/* Quiz Score Input Box - Only displayed if there's a quiz URL */}
+                      <div className={styles.quizContainer}>
+                        {/* Quiz Link - Always Visible Unless Test is Failed */}
+                        {!quizSubmitted[item.Id] && !quizTimeout[item.Id] && (
+                          <>
+                            <a
+                              href={item.Test.Url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className={styles.quizLink}
+                              onClick={() => handleQuizLinkClick(item.Id)}
+                            >
+                              {item.Test.Title}
+                            </a>
+                          </>
+                        )}
+
+                        {/* Quiz Form - Only Visible If Quiz Link Clicked */}
+                        {quizVisible[item.Id] && !quizSubmitted[item.Id] && (
+                          <>
+                            <div className={styles.quizScoreForm}>
+                              <input
+                                type="number"
+                                placeholder="Score"
+                                min="0"
+                                max={item.Test.MaximumScore}
+                                className={styles.quizInput}
+                                onChange={(e) =>
+                                  setQuizScores((prev) => ({
+                                    ...prev,
+                                    [item.Id]: Number(e.target.value),
+                                  }))
+                                }
+                                disabled={quizTimeout[item.Id]}
+                              />
+                              <button
+                                onClick={() => handleQuizSubmit(item.Id)}
+                                disabled={quizTimeout[item.Id]}
+                                className={styles.quizButton}
                               >
-                                {item.Test.Title}
-                              </a>
-                            </>
-                          )}
+                                Submit
+                              </button>
+                            </div>
+                          </>
+                        )}
 
-                          {/* Quiz Form - Only Visible If Quiz Link Clicked */}
-                          {quizVisible[item.Id] && !quizSubmitted[item.Id] && (
-                            <>
-                              <div className={styles.quizScoreForm}>
-                                <input
-                                  type="number"
-                                  placeholder="Score"
-                                  min="0"
-                                  max="5"
-                                  className={styles.quizInput}
-                                  onChange={(e) =>
-                                    setQuizScores((prev) => ({
-                                      ...prev,
-                                      [item.Id]: Number(e.target.value),
-                                    }))
-                                  }
-                                  disabled={quizTimeout[item.Id]}
-                                />
-                                <button
-                                  onClick={() => handleQuizSubmit(item.Id)}
-                                  disabled={quizTimeout[item.Id]}
-                                  className={styles.quizButton}
-                                >
-                                  Submit
-                                </button>
-                              </div>
-                            </>
-                          )}
+                        {/* Failure Message (Hidden After Timeout) */}
+                        {quizTimeout[item.Id] && (
+                          <p className={`${styles.quizMessage} ${styles.failure}`}> 
+                            Passing score is {item.Test?.PassingScore} out of {item.Test?.MaximumScore}. Try again in 10 seconds!
+                          </p>
+                        )}
 
-                          {/* Failure Message (Hidden After Timeout) */}
-                          {quizTimeout[item.Id] && (
-                            <p className={`${styles.quizMessage} ${styles.failure}`}>
-                              Try again in 10 seconds!
-                            </p>
-                          )}
-
-                          {/* Success Message (Displayed Forever After Passing) */}
-                          {quizSubmitted[item.Id] && quizScores[item.Id] >= 3 && (
-                            <p className={styles.quizMessage}>You passed {item.Test?.Title} with a score of {quizScores[item.Id]} out of 5!</p>
-                            // ALERT : quizzes assumed to be out of 5 at the moment
-                            // quizzes assumed to have a passing score of 3 at the moment
-                          )}
-                        </div>
+                        {/* Success Message (Displayed Forever After Passing) */}
+                        {quizSubmitted[item.Id] && quizScores[item.Id] >= item?.Test.PassingScore && (
+                          <p className={styles.quizMessage}>
+                            You passed {item.Test?.Title} with a score of {quizScores[item.Id]} out of {item.Test?.MaximumScore}!
+                          </p>
+                          // ALERT : quizzes assumed to be out of 5 at the moment
+                          // quizzes assumed to have a passing score of 3 at the moment
+                        )}
+                      </div>
                     </>
                   ) : (
                     <p style={{ fontStyle: "italic", color: "#999" }}>Complete all videos to unlock the quiz</p>
@@ -416,33 +424,67 @@ const Faq = (props: IFaqProps) => {
 
                     {isExamUnlocked ? (
                       <>
-                        <a
-                          href={item.Exam.Url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          {item.Exam.Title}
-                        </a>
+                        {/* Exam Score Input Box - Only displayed if there's an Exam URL */}
+                        <div className={styles.quizContainer}>
+                          {/* Exam Link - Always Visible Until Submission */}
+                          {!examSubmitted[item.Id] && !examTimeout[item.Id] && (
+                            <>
+                              <a
+                                href={item.Exam.Url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className={styles.quizLink}
+                                onClick={() => handleExamLinkClick(item.Id)}
+                              >
+                                {item.Exam.Title}
+                              </a>
+                            </>
+                          )}
 
-                        {/* Show input form only if exam is unlocked */}
-                        <div style={{ marginTop: "8px" }}>
-                            <input
-                              type="number"
-                              placeholder="Score"
-                              min="0"
-                              max="10"
-                              onChange={(e) => setExamScores(prev => ({ ...prev, [item.Id]: Number(e.target.value) }))}
-                              disabled={examTimeout[item.Id]}
-                            />
-                            <button onClick={() => handleExamSubmit(item.Id)} disabled={examTimeout[item.Id]}>
-                              Submit
-                            </button>
+                          {/* Quiz Form - Only Visible If Quiz Link Clicked */}
+                          {examVisible[item.Id] && !examSubmitted[item.Id] && (
+                            <>
+                              <div className={styles.quizScoreForm}>
+                                <input
+                                  type="number"
+                                  placeholder="Score"
+                                  min="0"
+                                  max={item.Exam.MaximumScore}
+                                  className={styles.quizInput}
+                                  onChange={(e) =>
+                                    setExamScores((prev) => ({
+                                      ...prev,
+                                      [item.Id]: Number(e.target.value),
+                                    }))
+                                  }
+                                  disabled={examTimeout[item.Id]}
+                                />
+                                <button
+                                  onClick={() => handleExamSubmit(item.Id)}
+                                  disabled={examTimeout[item.Id]}
+                                  className={styles.quizButton}
+                                >
+                                  Submit
+                                </button>
+                              </div>
+                            </>
+                          )}
 
-                            {examTimeout[item.Id] ? (
-                              <p>Try again in 10 seconds!</p>
-                            ) : (
-                              examSubmitted[item.Id] && examScores[item.Id] >= 6 ? <p>You passed, great job!</p> : null
-                            )}
+                          {/* Failure Message (Hidden After Timeout) */}
+                          {examTimeout[item.Id] && (
+                            <p className={`${styles.quizMessage} ${styles.failure}`}> 
+                              Passing score is {item.Exam?.PassingScore} out of {item.Exam?.MaximumScore}. Try again in 10 seconds!
+                            </p>
+                          )}
+
+                          {/* Success Message (Displayed Forever After Passing) */}
+                          {examSubmitted[item.Id] && examScores[item.Id] >= item?.Exam.PassingScore && (
+                            <p className={styles.quizMessage}>
+                              You passed {item.Exam?.Title} with a score of {examScores[item.Id]} out of {item.Exam?.MaximumScore}!
+                            </p>
+                            // ALERT : quizzes assumed to be out of 5 at the moment
+                            // quizzes assumed to have a passing score of 3 at the moment
+                          )}
                         </div>
                       </>
                     ) : (
