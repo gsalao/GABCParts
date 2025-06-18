@@ -6,6 +6,8 @@ import { SPFI } from "@pnp/sp";
 import { getSP } from "../../../pnpjsConfig";
 import { Icon } from "@fluentui/react/lib/Icon";
 
+import styles from './Faq.module.scss'
+
 const Faq = (props: IFaqProps) => {
   const _sp: SPFI | undefined = getSP(props.context);
   const [faqItems, setFaqItems] = useState<IFAQ[]>([]);
@@ -18,6 +20,18 @@ const Faq = (props: IFaqProps) => {
   const [examScores, setExamScores] = useState<{ [key: number]: number }>({});
   const [quizTimeout, setQuizTimeout] = useState<{ [key: number]: boolean }>({});
   const [examTimeout, setExamTimeout] = useState<{ [key: number]: boolean }>({});
+
+  // track if quizSubmitted
+  const [quizSubmitted, setQuizSubmitted] = useState<{ [key: number]: boolean }>({});
+  const [examSubmitted, setExamSubmitted] = useState<{ [key: number]: boolean }>({});
+
+  const [quizVisible, setQuizVisible] = useState<{ [key: number]: boolean }>({});
+
+  const [watchedVideos, setWatchedVideos] = useState<{ [key: number]: { [videoId: number]: boolean } }>({});
+
+  const handleQuizLinkClick = (moduleId: number) => {
+    setQuizVisible(prev => ({ ...prev, [moduleId]: true }));
+  };
 
   // note: _0x0020_ represents the space between column Module titles
 
@@ -98,8 +112,12 @@ const Faq = (props: IFaqProps) => {
       await updateProgress(moduleId, totalItems, `test-${moduleId}`);
       await logGrades(faqItem?.Title || "Unknown", moduleId, quizScores[moduleId]);
       await logModuleProgress(moduleId, faqItem?.Title || "Unknown", finalProgress);
+
+      setQuizSubmitted(prev => ({ ...prev, [moduleId]: true }));
+      setQuizVisible(prev => ({ ...prev, [moduleId]: false }));
     } else {
       setQuizTimeout(prev => ({ ...prev, [moduleId]: true }));
+      setQuizVisible(prev => ({ ...prev, [moduleId]: false }));
       setTimeout(() => {
         setQuizTimeout(prev => ({ ...prev, [moduleId]: false }));
       }, 10000);
@@ -118,6 +136,7 @@ const Faq = (props: IFaqProps) => {
       await logGrades(faqItem?.Title || "Unknown", moduleId, undefined, examScores[moduleId]); // Log exam scores
       await logModuleProgress(moduleId, faqItem?.Title || "Unknown", finalProgress);
 
+      setExamSubmitted(prev => ({ ...prev, [moduleId]: true }));
       // Set next module progress to 100% since exam is passed
       const nextModule = faqItems.find(f => f.ModuleNumber === faqItems[moduleId].ModuleNumber + 1);
       if (nextModule) {
@@ -143,7 +162,7 @@ const Faq = (props: IFaqProps) => {
           Body: item.Body,
           ModuleNumber: item["Module Number"],
           Videos: item.Videos ? JSON.parse(item.Videos) : [],
-          Test: item.Test ? JSON.parse(item.Test) : { Id: 0, Title: "No Test Available", Url: "" },
+          Test: item.Test ? JSON.parse(item.Test) : { Id: 0, Title: "No Test Available", Url: "" , PassingScore : 3 , MaximumScore : 5 },
           Exam: item.Exam ? JSON.parse(item.Exam) : undefined,
         }));
         parsed.sort((a, b) => a.ModuleNumber - b.ModuleNumber);
@@ -274,23 +293,39 @@ const Faq = (props: IFaqProps) => {
                           Your browser does not support the video tag.
                         </video>
                         {isVideoLocked && <p style={{ fontStyle: "italic", color: "#777" }}>Watch previous video first</p>}
-                        {videoWatched[video.Id] && (
-                          <label style={{ display: "block", marginTop: 8 }}>
-                            <input
-                              type="checkbox"
-                              disabled={checkboxClicked[video.Id]}
-                              onChange={() => {
-                                updateProgress(item.Id, totalItems, video.Id); // ✅ Update progress first
+                        {videoWatched[video.Id] && !watchedVideos[item.Id]?.[video.Id] && (
+                            <label
+                                style={{
+                                    display: "block",
+                                    marginTop: 8,
+                                    opacity: watchedVideos[item.Id]?.[video.Id] ? 0 : 1, // ✅ Fade effect
+                                    transition: "opacity 0.5s ease-out", // Smooth fade-out transition
+                                }}
+                            >
+                                <input
+                                    type="checkbox"
+                                    disabled={checkboxClicked[video.Id]}
+                                    onChange={() => {
+                                        updateProgress(item.Id, totalItems, video.Id);
 
-                                // Ensure latest progress value is passed to logModuleProgress
-                                const newProgress = ((progress[item.Id] || 0) + 100 / totalItems);
-                                const finalProgress = newProgress > 100 ? 100 : newProgress; 
+                                        const newProgress = ((progress[item.Id] || 0) + 100 / totalItems);
+                                        const finalProgress = newProgress > 100 ? 100 : newProgress; 
+                                        logModuleProgress(item.Id, item.Title || "Unknown", finalProgress);
 
-                                logModuleProgress(item.Id, item.Title || "Unknown", finalProgress); // ✅ Log module progress next
-                              }}
-                            />
-                            <span style={{ marginLeft: 8 }}>Mark as Watched</span>
-                          </label>
+                                        // Start fade-out effect before removal
+                                        setTimeout(() => {
+                                            setWatchedVideos(prev => ({
+                                                ...prev,
+                                                [item.Id]: {
+                                                    ...(prev[item.Id] || {}),
+                                                    [video.Id]: true
+                                                }
+                                            }));
+                                        }, 500); // Wait for fade-out before hiding
+                                    }}
+                                />
+                                <span style={{ marginLeft: 8 }}>Mark as Watched</span>
+                            </label>
                         )}
                       </div>
                     );
@@ -305,27 +340,66 @@ const Faq = (props: IFaqProps) => {
                 {item.Test?.Url ? (
                   allVideosDone ? (
                     <>
-                      <a
-                        href={item.Test.Url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        {item.Test.Title}
-                      </a>
+                        {/* Quiz Score Input Box - Only displayed if there's a quiz URL */}
+                        <div className={styles.quizContainer}>
+                          {/* Quiz Link - Always Visible Unless Test is Failed */}
+                          {!quizSubmitted[item.Id] && !quizTimeout[item.Id] && (
+                            <>
+                              <a
+                                href={item.Test.Url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className={styles.quizLink}
+                                onClick={() => handleQuizLinkClick(item.Id)}
+                              >
+                                {item.Test.Title}
+                              </a>
+                            </>
+                          )}
 
-                      {/* Quiz Score Input Box - Only displayed if there's a quiz URL */}
-                      <div style={{ marginTop: "8px" }}>
-                        <input
-                          type="number"
-                          placeholder="Score"
-                          min="0"
-                          max="5"
-                          onChange={(e) => setQuizScores(prev => ({ ...prev, [item.Id]: Number(e.target.value) }))}
-                          disabled={quizTimeout[item.Id]}
-                        />
-                        <button onClick={() => handleQuizSubmit(item.Id)} disabled={quizTimeout[item.Id]}>Submit</button>
-                        {quizTimeout[item.Id] && <p>Try again in 10 seconds!</p>}
-                      </div>
+                          {/* Quiz Form - Only Visible If Quiz Link Clicked */}
+                          {quizVisible[item.Id] && !quizSubmitted[item.Id] && (
+                            <>
+                              <div className={styles.quizScoreForm}>
+                                <input
+                                  type="number"
+                                  placeholder="Score"
+                                  min="0"
+                                  max="5"
+                                  className={styles.quizInput}
+                                  onChange={(e) =>
+                                    setQuizScores((prev) => ({
+                                      ...prev,
+                                      [item.Id]: Number(e.target.value),
+                                    }))
+                                  }
+                                  disabled={quizTimeout[item.Id]}
+                                />
+                                <button
+                                  onClick={() => handleQuizSubmit(item.Id)}
+                                  disabled={quizTimeout[item.Id]}
+                                  className={styles.quizButton}
+                                >
+                                  Submit
+                                </button>
+                              </div>
+                            </>
+                          )}
+
+                          {/* Failure Message (Hidden After Timeout) */}
+                          {quizTimeout[item.Id] && (
+                            <p className={`${styles.quizMessage} ${styles.failure}`}>
+                              Try again in 10 seconds!
+                            </p>
+                          )}
+
+                          {/* Success Message (Displayed Forever After Passing) */}
+                          {quizSubmitted[item.Id] && quizScores[item.Id] >= 3 && (
+                            <p className={styles.quizMessage}>You passed {item.Test?.Title} with a score of {quizScores[item.Id]} out of 5!</p>
+                            // ALERT : quizzes assumed to be out of 5 at the moment
+                            // quizzes assumed to have a passing score of 3 at the moment
+                          )}
+                        </div>
                     </>
                   ) : (
                     <p style={{ fontStyle: "italic", color: "#999" }}>Complete all videos to unlock the quiz</p>
@@ -352,16 +426,23 @@ const Faq = (props: IFaqProps) => {
 
                         {/* Show input form only if exam is unlocked */}
                         <div style={{ marginTop: "8px" }}>
-                          <input
-                            type="number"
-                            placeholder="Score"
-                            min="0"
-                            max="10"
-                            onChange={(e) => setExamScores(prev => ({ ...prev, [item.Id]: Number(e.target.value) }))}
-                            disabled={examTimeout[item.Id]}
-                          />
-                          <button onClick={() => handleExamSubmit(item.Id)} disabled={examTimeout[item.Id]}>Submit</button>
-                          {examTimeout[item.Id] && <p>⏳ Try again in 10 seconds!</p>}
+                            <input
+                              type="number"
+                              placeholder="Score"
+                              min="0"
+                              max="10"
+                              onChange={(e) => setExamScores(prev => ({ ...prev, [item.Id]: Number(e.target.value) }))}
+                              disabled={examTimeout[item.Id]}
+                            />
+                            <button onClick={() => handleExamSubmit(item.Id)} disabled={examTimeout[item.Id]}>
+                              Submit
+                            </button>
+
+                            {examTimeout[item.Id] ? (
+                              <p>Try again in 10 seconds!</p>
+                            ) : (
+                              examSubmitted[item.Id] && examScores[item.Id] >= 6 ? <p>You passed, great job!</p> : null
+                            )}
                         </div>
                       </>
                     ) : (

@@ -8,12 +8,16 @@ export interface ITest {
   Id: number;
   Title: string;
   Url: string;
+  PassingScore: number;
+  MaximumScore: number;
 }
 
 export interface IExam {
   Id: number;
   Title: string;
   Url: string;
+  PassingScore: number;
+  MaximumScore: number;
 }
 
 export interface IFAQ {

@@ -22,7 +22,7 @@ export default class LMSModulesWebPart extends BaseClientSideWebPart<ILMSModules
       hasTeamsContext: !!this.context.sdks.microsoftTeams,
       userDisplayName: this.context.pageContext.user.displayName,
       context: this.context,
-      listGuid: "LMS Modules", // ✅ Hardcoded list name
+      listGuid: "LMS Modules", // Hardcoded list name (assert correct list name)
     });
 
     ReactDom.render(element, this.domElement);
