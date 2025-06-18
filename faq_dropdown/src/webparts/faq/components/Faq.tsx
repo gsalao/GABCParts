@@ -29,6 +29,9 @@ const Faq = (props: IFaqProps) => {
 
   const [watchedVideos, setWatchedVideos] = useState<{ [key: number]: { [videoId: number]: boolean } }>({});
 
+  const [quizCountdowns, setQuizCountdowns] = useState<{ [key: number]: number }>({});
+  const [examCountdowns, setExamCountdowns] = useState<{ [key: number]: number }>({});
+
   const handleQuizLinkClick = (moduleId: number) => {
     setQuizVisible(prev => ({ ...prev, [moduleId]: true }));
   };
@@ -122,9 +125,19 @@ const Faq = (props: IFaqProps) => {
     } else {
       setQuizTimeout(prev => ({ ...prev, [moduleId]: true }));
       setQuizVisible(prev => ({ ...prev, [moduleId]: false }));
-      setTimeout(() => {
-        setQuizTimeout(prev => ({ ...prev, [moduleId]: false }));
-      }, 10000);
+      setQuizCountdowns(prev => ({ ...prev, [moduleId]: 5 }));
+
+      const countdownInterval = setInterval(() => {
+        setQuizCountdowns(prev => {
+          const current = prev[moduleId];
+          if (current <= 1) {
+            clearInterval(countdownInterval);
+            setQuizTimeout(timeout => ({ ...timeout, [moduleId]: false }));
+            return { ...prev, [moduleId]: 0 };
+          }
+          return { ...prev, [moduleId]: current - 1 };
+        });
+      }, 1000);
     }
   };  
 
@@ -150,9 +163,19 @@ const Faq = (props: IFaqProps) => {
     } else {
       setExamTimeout(prev => ({ ...prev, [moduleId]: true }));
       setExamVisible(prev => ({ ...prev, [moduleId]: false }));
-      setTimeout(() => {
-        setExamTimeout(prev => ({ ...prev, [moduleId]: false }));
-      }, 10000);
+      setExamCountdowns(prev => ({ ...prev, [moduleId]: 5 }));
+
+      const countdownInterval = setInterval(() => {
+        setExamCountdowns(prev => {
+          const current = prev[moduleId];
+          if (current <= 1) {
+            clearInterval(countdownInterval);
+            setExamTimeout(timeout => ({ ...timeout, [moduleId]: false }));
+            return { ...prev, [moduleId]: 0 };
+          }
+          return { ...prev, [moduleId]: current - 1 };
+        });
+      }, 1000);
     }
   };
 
@@ -394,8 +417,11 @@ const Faq = (props: IFaqProps) => {
 
                         {/* Failure Message (Hidden After Timeout) */}
                         {quizTimeout[item.Id] && (
-                          <p className={`${styles.quizMessage} ${styles.failure}`}> 
-                            Passing score is {item.Test?.PassingScore} out of {item.Test?.MaximumScore}. Try again in 10 seconds!
+                          <p className={`${styles.quizMessage} ${styles.failure}`}>
+                            Passing score is {item.Test?.PassingScore} out of {item.Test?.MaximumScore}. 
+                            Try again in {
+                              Math.floor((quizCountdowns[item.Id] ?? 0) / 60)
+                            }:{((quizCountdowns[item.Id] ?? 0) % 60).toString().padStart(2, "0")} minutes!
                           </p>
                         )}
 
@@ -472,8 +498,11 @@ const Faq = (props: IFaqProps) => {
 
                           {/* Failure Message (Hidden After Timeout) */}
                           {examTimeout[item.Id] && (
-                            <p className={`${styles.quizMessage} ${styles.failure}`}> 
-                              Passing score is {item.Exam?.PassingScore} out of {item.Exam?.MaximumScore}. Try again in 10 seconds!
+                            <p className={`${styles.quizMessage} ${styles.failure}`}>
+                              Passing score is {item.Exam?.PassingScore} out of {item.Exam?.MaximumScore}. 
+                              Try again in {
+                                Math.floor((examCountdowns[item.Id] ?? 0) / 60)
+                              }:{((examCountdowns[item.Id] ?? 0) % 60).toString().padStart(2, "0")} minutes!
                             </p>
                           )}
 
