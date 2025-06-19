@@ -200,7 +200,7 @@ const Faq = (props: IFaqProps): JSX.Element => {
           Id: item.Id,
           Title: item.Title,
           Body: item.Body,
-          ModuleNumber: item["Module Number"],
+          ModuleNumber: item.ModuleNumber ? JSON.parse(item.ModuleNumber): 0,
           Videos: item.Videos ? JSON.parse(item.Videos) : [],
           Test: item.Test ? JSON.parse(item.Test) : { Id: 0, Title: "No Test Available", Url: "" , PassingScore: 0, MaximumScore: 0 },
           Exam: item.Exam ? JSON.parse(item.Exam) : "",
@@ -211,8 +211,7 @@ const Faq = (props: IFaqProps): JSX.Element => {
         console.error("Error fetching items:", err);
       }
     };
-
-    getFAQItems().catch((err) => console.error("Unhandled error in getFAQItems: ", err));
+    getFAQItems();
   }, []);
 
   const handleVideoEnd = (videoId: number): void => {
@@ -265,7 +264,7 @@ const Faq = (props: IFaqProps): JSX.Element => {
               }}
             >
               <span>
-                {item.ModuleNumber !== null ? `Module ${item.ModuleNumber}: ${item.Title}` : item.Title}
+                {`Module ${item.ModuleNumber}: ${item.Title}`}
               </span>
               <Icon
                 iconName={isOpen ? "ChevronDown" : "ChevronRight"}
@@ -297,7 +296,7 @@ const Faq = (props: IFaqProps): JSX.Element => {
 
             {isOpen && (
               <div style={{ padding: 24 }}>
-                <h3 style={{ borderBottom: "3px solid #FFCC00", paddingBottom: 6, color: "#000" }}>LintPassedDescription</h3>
+                <h3 style={{ borderBottom: "3px solid #FFCC00", paddingBottom: 6, color: "#000" }}>Description</h3>
                 <p>{item.Body}</p>
 
                 <hr style={{ margin: "20px 0", border: "1px solid #ccc" }} />
@@ -341,7 +340,7 @@ const Faq = (props: IFaqProps): JSX.Element => {
                                         const newProgress = ((progress[item.Id] || 0) + 100 / totalItems);
                                         const finalProgress = newProgress > 100 ? 100 : newProgress; 
                                         logModuleProgress(item.Id, item.Title || "Unknown", finalProgress).
-                                          catch((err) => console.error("Unhandled error in logModuleProgress: ", err));
+                                          catch((err) => console.error("Unhandled error from logModuleProgress: ", err));
 
                                         // Start fade-out effect before removal
                                         setTimeout(() => {
