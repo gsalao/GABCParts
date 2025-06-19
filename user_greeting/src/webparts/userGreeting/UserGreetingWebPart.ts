@@ -30,6 +30,10 @@ export default class UserGreetingWebPart extends BaseClientSideWebPart<IUserGree
     ReactDom.render(element, this.domElement);
   }
 
+  public onDispose(): void {
+    ReactDom.unmountComponentAtNode(this.domElement);
+  }
+
   protected get dataVersion(): Version {
     return Version.parse('1.0');
   }
