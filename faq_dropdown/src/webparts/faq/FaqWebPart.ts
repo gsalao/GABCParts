@@ -28,6 +28,10 @@ export default class LMSModulesWebPart extends BaseClientSideWebPart<ILMSModules
     ReactDom.render(element, this.domElement);
   }
 
+  public onDispose(): void {
+    ReactDom.unmountComponentAtNode(this.domElement);
+  }
+
   protected getPropertyPaneConfiguration(): IPropertyPaneConfiguration {
     return {
       pages: [
