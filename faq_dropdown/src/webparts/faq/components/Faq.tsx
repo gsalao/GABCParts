@@ -211,7 +211,7 @@ const Faq = (props: IFaqProps): JSX.Element => {
         console.error("Error fetching items:", err);
       }
     };
-    getFAQItems();
+    getFAQItems().catch((err) => console.error("Unhandled error from getFAQItems: ", err));
   }, []);
 
   const handleVideoEnd = (videoId: number): void => {
