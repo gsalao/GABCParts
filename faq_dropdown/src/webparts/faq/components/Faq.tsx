@@ -8,7 +8,7 @@ import { Icon } from "@fluentui/react/lib/Icon";
 
 import styles from './Faq.module.scss'
 
-const Faq = (props: IFaqProps) => {
+const Faq = (props: IFaqProps): JSX.Element => {
   const _sp: SPFI | undefined = getSP(props.context);
   const [faqItems, setFaqItems] = useState<IFAQ[]>([]);
   const [progress, setProgress] = useState<{ [key: number]: number }>({});
@@ -32,17 +32,28 @@ const Faq = (props: IFaqProps) => {
   const [quizCountdowns, setQuizCountdowns] = useState<{ [key: number]: number }>({});
   const [examCountdowns, setExamCountdowns] = useState<{ [key: number]: number }>({});
 
-  const handleQuizLinkClick = (moduleId: number) => {
+  const handleQuizLinkClick = (moduleId: number): void => {
     setQuizVisible(prev => ({ ...prev, [moduleId]: true }));
   };
 
-  const handleExamLinkClick = (moduleId: number) => {
+  const handleExamLinkClick = (moduleId: number): void => {
     setExamVisible(prev => ({ ...prev, [moduleId]: true }));
   };
 
   // note: _0x0020_ represents the space between column Module titles
 
-  const logModuleProgress = async (moduleId: number, moduleTitle: string, progress: number) => {
+  const updateProgress = (moduleId: number, totalItems: number, videoId: string | number): void => {
+    if (!checkboxClicked[videoId]) {
+      const newProgress = ((progress[moduleId] || 0) + 100 / totalItems);
+      setProgress(prev => ({
+        ...prev,
+        [moduleId]: newProgress > 100 ? 100 : newProgress
+      }));
+      setCheckboxClicked(prev => ({ ...prev, [videoId]: true }));
+    }
+  };
+
+  const logModuleProgress = async (moduleId: number, moduleTitle: string, progress: number): Promise<void> => {
     try {
       const list = _sp.web.lists.getByTitle("Module Progress List");
 
@@ -79,7 +90,7 @@ const Faq = (props: IFaqProps) => {
   };
 
 
-  const logGrades = async (moduleTitle: string, moduleId: number, quizScore?: number, examScore?: number) => {
+  const logGrades = async (moduleTitle: string, moduleId: number, quizScore?: number, examScore?: number): Promise<void> => {
     try {
       const list = _sp?.web.lists.getByTitle("Grades List");
 
@@ -108,7 +119,7 @@ const Faq = (props: IFaqProps) => {
     }
   };
 
-  const handleQuizSubmit = async (moduleId: number) => {
+  const handleQuizSubmit = async (moduleId: number): Promise<void> => {
     const faqItem = faqItems.find((item) => item.Id === moduleId);
     const totalItems = + (faqItem?.Test?.Url ? 1 : 0) + (faqItem?.Exam?.Url ? 1 : 0) + (faqItem?.Videos ? faqItem?.Videos.length : 0);
 
@@ -141,7 +152,7 @@ const Faq = (props: IFaqProps) => {
     }
   };  
 
-  const handleExamSubmit = async (moduleId: number) => {
+  const handleExamSubmit = async (moduleId: number): Promise<void> => {
     const faqItem = faqItems.find((item) => item.Id === moduleId);
     const totalItems = + (faqItem?.Test?.Url ? 1 : 0) + (faqItem?.Exam?.Url ? 1 : 0) + (faqItem?.Videos ? faqItem?.Videos.length : 0);
 
@@ -192,7 +203,7 @@ const Faq = (props: IFaqProps) => {
           ModuleNumber: item["Module Number"],
           Videos: item.Videos ? JSON.parse(item.Videos) : [],
           Test: item.Test ? JSON.parse(item.Test) : { Id: 0, Title: "No Test Available", Url: "" , PassingScore: 0, MaximumScore: 0 },
-          Exam: item.Exam ? JSON.parse(item.Exam) : undefined,
+          Exam: item.Exam ? JSON.parse(item.Exam) : "",
         }));
         parsed.sort((a, b) => a.ModuleNumber - b.ModuleNumber);
         setFaqItems(parsed);  
@@ -200,25 +211,15 @@ const Faq = (props: IFaqProps) => {
         console.error("Error fetching items:", err);
       }
     };
-    getFAQItems();
+
+    getFAQItems().catch((err) => console.error("Unhandled error in getFAQItems: ", err));
   }, []);
 
-  const updateProgress = (moduleId: number, totalItems: number, videoId: string | number) => {
-    if (!checkboxClicked[videoId]) {
-      const newProgress = ((progress[moduleId] || 0) + 100 / totalItems);
-      setProgress(prev => ({
-        ...prev,
-        [moduleId]: newProgress > 100 ? 100 : newProgress
-      }));
-      setCheckboxClicked(prev => ({ ...prev, [videoId]: true }));
-    }
-  };
-
-  const handleVideoEnd = (videoId: number) => {
+  const handleVideoEnd = (videoId: number): void => {
     setVideoWatched(prev => ({ ...prev, [videoId]: true }));
   };
 
-  const toggle = (id: number) => {
+  const toggle = (id: number): void => {
     setExpanded(prev => ({ ...prev, [id]: !prev[id] }));
   };
 
@@ -264,7 +265,7 @@ const Faq = (props: IFaqProps) => {
               }}
             >
               <span>
-                {item.ModuleNumber != null ? `Module ${item.ModuleNumber}: ${item.Title}` : item.Title}
+                {item.ModuleNumber !== null ? `Module ${item.ModuleNumber}: ${item.Title}` : item.Title}
               </span>
               <Icon
                 iconName={isOpen ? "ChevronDown" : "ChevronRight"}
@@ -296,7 +297,7 @@ const Faq = (props: IFaqProps) => {
 
             {isOpen && (
               <div style={{ padding: 24 }}>
-                <h3 style={{ borderBottom: "3px solid #FFCC00", paddingBottom: 6, color: "#000" }}>Description</h3>
+                <h3 style={{ borderBottom: "3px solid #FFCC00", paddingBottom: 6, color: "#000" }}>LintPassedDescription</h3>
                 <p>{item.Body}</p>
 
                 <hr style={{ margin: "20px 0", border: "1px solid #ccc" }} />
@@ -339,7 +340,8 @@ const Faq = (props: IFaqProps) => {
 
                                         const newProgress = ((progress[item.Id] || 0) + 100 / totalItems);
                                         const finalProgress = newProgress > 100 ? 100 : newProgress; 
-                                        logModuleProgress(item.Id, item.Title || "Unknown", finalProgress);
+                                        logModuleProgress(item.Id, item.Title || "Unknown", finalProgress).
+                                          catch((err) => console.error("Unhandled error in logModuleProgress: ", err));
 
                                         // Start fade-out effect before removal
                                         setTimeout(() => {
