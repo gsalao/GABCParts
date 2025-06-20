@@ -57,12 +57,15 @@ const Faq = (props: IFaqProps): JSX.Element => {
     try {
       const list = _sp.web.lists.getByTitle("Module Progress List");
 
+      // Get correct module number for filtering
+      const faqItem = faqItems.find(item => item.Id === moduleId);
+      const moduleNumber = faqItem?.ModuleNumber;
+
       // Fetch all items and find existing module entry
       const allItems = await list.items();
-      const existingItems = allItems.filter(item => item.ModuleNumber === moduleId);
+      const existingItems = allItems.filter(item => item.ModuleNumber === moduleNumber);
 
       // Calculate VideoProgress (number of watched videos vs total)
-      const faqItem = faqItems.find(item => item.Id === moduleId);
       const totalVideos = faqItem?.Videos?.length || 0;
       const moduleVideoIds = faqItem?.Videos?.map(v => v.Id) || [];
       const watchedVideos = moduleVideoIds.filter(id => videoWatched[Number(id)]);
@@ -70,19 +73,19 @@ const Faq = (props: IFaqProps): JSX.Element => {
 
       const updatedData = {
         Title: moduleTitle,
-        ModuleNumber: moduleId,
+        ModuleNumber: moduleNumber,
         ModuleProgress: progress,
         VideoProgress: videoProgress, // ✅ Corrected calculation
         QuizProgress: quizScores[moduleId] >= 3 ? 100 : 0,
         ExamProgress: examScores[moduleId] >= 6 ? 100 : 0,
-      };
+      };  
 
       if (existingItems.length > 0) {
         await list.items.getById(existingItems[0].Id).update(updatedData);
-        console.log(`Module ${moduleId} progress updated successfully!`);
+        console.log(`Module ${moduleNumber} progress updated successfully!`);
       } else {
         await list.items.add(updatedData);
-        console.log(`Module ${moduleId} progress logged successfully!`);
+        console.log(`Module ${moduleNumber} progress logged successfully!`);
       }
     } catch (error) {
       console.error("Error logging module progress:", error);
@@ -94,13 +97,17 @@ const Faq = (props: IFaqProps): JSX.Element => {
     try {
       const list = _sp?.web.lists.getByTitle("Grades List");
 
+      // Get correct module number for filtering
+      const faqItem = faqItems.find(item => item.Id === moduleId);
+      const moduleNumber = faqItem?.ModuleNumber;
+
       // Fetch all items and filter for existing one with the same ModuleNumber
       const allItems = await list.items(); 
-      const existingItems = allItems.filter(item => item.ModuleNumber === moduleId);
+      const existingItems = allItems.filter(item => item.ModuleNumber === moduleNumber);
 
       const updatedData = {
         Title: moduleTitle,
-        ModuleNumber: moduleId,
+        ModuleNumber: moduleNumber,
         QuizScore: quizScore ?? existingItems[0]?.QuizScore ?? null, // Preserve existing value if undefined
         ExamScore: examScore ?? existingItems[0]?.ExamScore ?? null,
       };
@@ -108,11 +115,11 @@ const Faq = (props: IFaqProps): JSX.Element => {
       if (existingItems.length > 0) {
         // Update existing entry
         await list.items.getById(existingItems[0].Id).update(updatedData);
-        console.log(`Updated grades for Module ${moduleId} successfully!`);
+        console.log(`Updated grades for Module ${moduleNumber} successfully!`);
       } else {
         // Add new entry
         await list.items.add(updatedData);
-        console.log(`Grades logged successfully for Module ${moduleId}`);
+        console.log(`Grades logged successfully for Module ${moduleNumber}`);
       }
     } catch (error) {
       console.error("Error logging grades:", error);
@@ -167,7 +174,7 @@ const Faq = (props: IFaqProps): JSX.Element => {
       setExamSubmitted(prev => ({ ...prev, [moduleId]: true }));
       setExamVisible(prev => ({ ...prev, [moduleId]: false }));
       // Set next module progress to 100% since exam is passed
-      const nextModule = faqItems.find(f => f.ModuleNumber === faqItems[moduleId].ModuleNumber + 1);
+      const nextModule = faqItems.find(f => f.ModuleNumber === (faqItem?.ModuleNumber ?? 0) + 1);
       if (nextModule) {
         setProgress(prev => ({ ...prev, [nextModule.Id]: 100 }));
       }
@@ -296,7 +303,7 @@ const Faq = (props: IFaqProps): JSX.Element => {
 
             {isOpen && (
               <div style={{ padding: 24 }}>
-                <h3 style={{ borderBottom: "3px solid #FFCC00", paddingBottom: 6, color: "#000" }}>Description</h3>
+                <h3 style={{ borderBottom: "3px solid #FFCC00", paddingBottom: 6, color: "#000" }}>UpdatedDescription</h3>
                 <p>{item.Body}</p>
 
                 <hr style={{ margin: "20px 0", border: "1px solid #ccc" }} />
@@ -339,6 +346,9 @@ const Faq = (props: IFaqProps): JSX.Element => {
 
                                         const newProgress = ((progress[item.Id] || 0) + 100 / totalItems);
                                         const finalProgress = newProgress > 100 ? 100 : newProgress; 
+
+                                        console.log(item)
+
                                         logModuleProgress(item.Id, item.Title || "Unknown", finalProgress).
                                           catch((err) => console.error("Unhandled error from logModuleProgress: ", err));
 
