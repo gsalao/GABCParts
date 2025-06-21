@@ -1,0 +1,18 @@
+{
+  "@microsoft/generator-sharepoint": {
+    "plusBeta": false,
+    "isCreatingSolution": true,
+    "nodeVersion": "22.16.0",
+    "sdksVersions": {},
+    "version": "1.21.1",
+    "libraryName": "five-column",
+    "libraryId": "bee1dbdf-5b24-40de-a99a-3d0aed939ff6",
+    "environment": "spo",
+    "packageManager": "npm",
+    "solutionName": "five-column",
+    "solutionShortDescription": "five-column description",
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "componentType": "webpart"
+  }
+}
