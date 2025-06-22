@@ -1,34 +1,57 @@
 @import '~@fluentui/react/dist/sass/References.scss';
 
-.flexButtons {
-  overflow: hidden;
-  padding: 1em;
-  color: "[theme:bodyText, default: #323130]";
-  color: var(--bodyText);
-  &.teams {
-    font-family: $ms-font-family-fallbacks;
-  }
+.buttonRow {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin: 20px 0;
+  font-family: 'Montserrat', sans-serif;
 }
 
-.welcome {
+.buttonContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.roundedButton {
+  width: 80px;
+  height: 80px;
+  border-radius: 12px;
   text-align: center;
+  line-height: 80px;
+  font-weight: bold;
+  text-decoration: none;
+  transition: transform 0.2s ease;
+  display: inline-block;
+  overflow: hidden;
+  background-color: #ddd;
 }
 
-.welcomeImage {
+.roundedButton:hover {
+  transform: scale(1.1);
+}
+
+.iconImage {
   width: 100%;
-  max-width: 420px;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 12px; // Match button shape
 }
 
-.links {
-  a {
-    text-decoration: none;
-    color: "[theme:link, default:#03787c]";
-    color: var(--link); // note: CSS Custom Properties support is limited to modern browsers only
+.fallbackLabel {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
 
-    &:hover {
-      text-decoration: underline;
-      color: "[theme:linkHovered, default: #014446]";
-      color: var(--linkHovered); // note: CSS Custom Properties support is limited to modern browsers only
-    }
-  }
+.label {
+  margin-top: 6px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: 'Montserrat', sans-serif;
+  color: #333;
 }
