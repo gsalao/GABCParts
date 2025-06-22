@@ -61,6 +61,9 @@ const Faq = (props: IFaqProps): JSX.Element => {
       const faqItem = faqItems.find(item => item.Id === moduleId);
       const moduleNumber = faqItem?.ModuleNumber;
 
+      const quizPassingScore = faqItem?.Test.PassingScore ?? 3; // default quiz passing score set to 3
+      const examPassingScore = faqItem?.Exam?.PassingScore ?? 6; // default exam passing score set to 6
+
       // Fetch all items and find existing module entry
       const allItems = await list.items();
       const existingItems = allItems.filter(item => item.ModuleNumber === moduleNumber);
@@ -76,8 +79,8 @@ const Faq = (props: IFaqProps): JSX.Element => {
         ModuleNumber: moduleNumber,
         ModuleProgress: progress,
         VideoProgress: videoProgress, // ✅ Corrected calculation
-        QuizProgress: quizScores[moduleId] >= 3 ? 100 : 0,
-        ExamProgress: examScores[moduleId] >= 6 ? 100 : 0,
+        QuizProgress: quizScores[moduleId] >= quizPassingScore ? 100 : 0,
+        ExamProgress: examScores[moduleId] >= examPassingScore ? 100 : 0,
       };  
 
       if (existingItems.length > 0) {
@@ -105,6 +108,7 @@ const Faq = (props: IFaqProps): JSX.Element => {
       const allItems = await list.items(); 
       const existingItems = allItems.filter(item => item.ModuleNumber === moduleNumber);
 
+      // ALERT : add QuizPassingScore and ExamPassingScore 
       const updatedData = {
         Title: moduleTitle,
         ModuleNumber: moduleNumber,
@@ -130,7 +134,9 @@ const Faq = (props: IFaqProps): JSX.Element => {
     const faqItem = faqItems.find((item) => item.Id === moduleId);
     const totalItems = + (faqItem?.Test?.Url ? 1 : 0) + (faqItem?.Exam?.Url ? 1 : 0) + (faqItem?.Videos ? faqItem?.Videos.length : 0);
 
-    if (quizScores[moduleId] >= 3) {
+    const quizPassingScore = faqItem?.Test.PassingScore ?? 3; // default quiz passing score is 3 (60% of 5; default 5 total also)
+
+    if (quizScores[moduleId] >= quizPassingScore) {
       const newProgress = ((progress[moduleId] || 0) + 100 / totalItems);
       const finalProgress = newProgress > 100 ? 100 : newProgress;  // Ensure max limit
 
@@ -163,7 +169,9 @@ const Faq = (props: IFaqProps): JSX.Element => {
     const faqItem = faqItems.find((item) => item.Id === moduleId);
     const totalItems = + (faqItem?.Test?.Url ? 1 : 0) + (faqItem?.Exam?.Url ? 1 : 0) + (faqItem?.Videos ? faqItem?.Videos.length : 0);
 
-    if (examScores[moduleId] >= 6) {
+    const examPassingScore = faqItem?.Exam?.PassingScore ?? 6; // default exam passing score set to 6 (60% of 10; default also)
+
+    if (examScores[moduleId] >= examPassingScore) {
       const newProgress = ((progress[moduleId] || 0) + 100 / totalItems);
       const finalProgress = newProgress > 100 ? 100 : newProgress;
 
