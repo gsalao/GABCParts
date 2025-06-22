@@ -1,0 +1,18 @@
+{
+  "@microsoft/generator-sharepoint": {
+    "plusBeta": false,
+    "isCreatingSolution": true,
+    "nodeVersion": "20.11.1",
+    "sdksVersions": {},
+    "version": "1.21.1",
+    "libraryName": "flex-buttons",
+    "libraryId": "7c2d810a-2ce4-4b13-ad00-53cc1a8110f4",
+    "environment": "spo",
+    "packageManager": "npm",
+    "solutionName": "flex-buttons",
+    "solutionShortDescription": "flex-buttons description",
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "componentType": "webpart"
+  }
+}

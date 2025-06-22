@@ -1,0 +1,40 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/package-solution.schema.json",
+  "solution": {
+    "name": "flex-buttons-client-side-solution",
+    "id": "7c2d810a-2ce4-4b13-ad00-53cc1a8110f4",
+    "version": "1.0.0.0",
+    "includeClientSideAssets": true,
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "developer": {
+      "name": "",
+      "websiteUrl": "",
+      "privacyUrl": "",
+      "termsOfUseUrl": "",
+      "mpnId": "Undefined-1.21.1"
+    },
+    "metadata": {
+      "shortDescription": {
+        "default": "flex-buttons description"
+      },
+      "longDescription": {
+        "default": "flex-buttons description"
+      },
+      "screenshotPaths": [],
+      "videoUrl": "",
+      "categories": []
+    },
+    "features": [
+      {
+        "title": "flex-buttons Feature",
+        "description": "The feature that activates elements of the flex-buttons solution.",
+        "id": "a68309b1-59ee-4fdc-8013-c49d64db7cf1",
+        "version": "1.0.0.0"
+      }
+    ]
+  },
+  "paths": {
+    "zippedPackage": "solution/flex-buttons.sppkg"
+  }
+}
