@@ -96,7 +96,7 @@ const Faq = (props: IFaqProps): JSX.Element => {
   };
 
 
-  const logGrades = async (moduleTitle: string, moduleId: number, quizScore?: number, examScore?: number): Promise<void> => {
+  const logGrades = async (moduleTitle: string, moduleId: number, quizScore?: number, quizMaxScore?: number, examScore?: number, examMaxScore?: number): Promise<void> => {
     try {
       const list = _sp?.web.lists.getByTitle("Grades List");
 
@@ -108,12 +108,27 @@ const Faq = (props: IFaqProps): JSX.Element => {
       const allItems = await list.items(); 
       const existingItems = allItems.filter(item => item.ModuleNumber === moduleNumber);
 
-      // ALERT : add QuizPassingScore and ExamPassingScore 
+      // Quiz-related returns
+      const quizMaxScore = faqItem?.Test.MaximumScore ?? null;
+
+      // Exam-related returns
+      const examMaxScore = faqItem?.Exam?.MaximumScore ?? null;
+      const examExists = !!faqItem?.Exam;
+      const examScoreValue = examExists
+        ? examScore ?? existingItems[0]?.ExamScore ?? null
+        : null;
+      const examMaxScoreValue = examExists
+        ? examMaxScore
+        : null;
+
+      // only need Quiz and Exam max score since failing scores are already caught in the process anyways
       const updatedData = {
         Title: moduleTitle,
         ModuleNumber: moduleNumber,
-        QuizScore: quizScore ?? existingItems[0]?.QuizScore ?? null, // Preserve existing value if undefined
-        ExamScore: examScore ?? existingItems[0]?.ExamScore ?? null,
+        QuizScore: quizScore ?? existingItems[0]?.QuizScore ?? null,
+        QuizMaxScore: quizMaxScore,
+        ExamScore: examScoreValue,
+        ExamMaxScore: examMaxScoreValue,
       };
 
       if (existingItems.length > 0) {
@@ -141,7 +156,7 @@ const Faq = (props: IFaqProps): JSX.Element => {
       const finalProgress = newProgress > 100 ? 100 : newProgress;  // Ensure max limit
 
       await updateProgress(moduleId, totalItems, `test-${moduleId}`);
-      await logGrades(faqItem?.Title || "Unknown", moduleId, quizScores[moduleId]);
+      await logGrades(faqItem?.Title || "Unknown", moduleId, quizScores[moduleId], faqItem?.Test.MaximumScore || 5);
       await logModuleProgress(moduleId, faqItem?.Title || "Unknown", finalProgress);
 
       setQuizSubmitted(prev => ({ ...prev, [moduleId]: true }));
@@ -176,16 +191,11 @@ const Faq = (props: IFaqProps): JSX.Element => {
       const finalProgress = newProgress > 100 ? 100 : newProgress;
 
       await updateProgress(moduleId, totalItems, `exam-${moduleId}`);
-      await logGrades(faqItem?.Title || "Unknown", moduleId, undefined, examScores[moduleId]); // Log exam scores
+      await logGrades(faqItem?.Title || "Unknown", moduleId, undefined, undefined, examScores[moduleId], faqItem?.Exam?.MaximumScore); // Log exam scores
       await logModuleProgress(moduleId, faqItem?.Title || "Unknown", finalProgress);
 
       setExamSubmitted(prev => ({ ...prev, [moduleId]: true }));
       setExamVisible(prev => ({ ...prev, [moduleId]: false }));
-      // Set next module progress to 100% since exam is passed
-      const nextModule = faqItems.find(f => f.ModuleNumber === (faqItem?.ModuleNumber ?? 0) + 1);
-      if (nextModule) {
-        setProgress(prev => ({ ...prev, [nextModule.Id]: 100 }));
-      }
     } else {
       setExamTimeout(prev => ({ ...prev, [moduleId]: true }));
       setExamVisible(prev => ({ ...prev, [moduleId]: false }));
@@ -311,7 +321,7 @@ const Faq = (props: IFaqProps): JSX.Element => {
 
             {isOpen && (
               <div style={{ padding: 24 }}>
-                <h3 style={{ borderBottom: "3px solid #FFCC00", paddingBottom: 6, color: "#000" }}>Description</h3>
+                <h3 style={{ borderBottom: "3px solid #FFCC00", paddingBottom: 6, color: "#000" }}>WorkingDescription</h3>
                 <p>{item.Body}</p>
 
                 <hr style={{ margin: "20px 0", border: "1px solid #ccc" }} />
