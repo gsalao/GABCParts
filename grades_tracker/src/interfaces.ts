@@ -1,9 +1,12 @@
 export interface IGrades {
-  Id: number;
+  Id?: number;
   ModuleNumber: number;
   Title: string;
   QuizScore?: number;
   ExamScore?: number;
+  QuizMaxScore?: number;
+  ExamMaxScore?: number;
+  HasExam?: boolean;
 }
 
 export interface IGradesAccordionState {

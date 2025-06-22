@@ -12,22 +12,40 @@ const GradesTracker = (props: { context: any }) => {
   const [gradesOpen, setGradesOpen] = useState(false);
 
   useEffect(() => {
-    const fetchGrades = async () => {
+    const fetchGradesWithMetadata = async () => {
       try {
         if (!_sp) {
           console.error("SP context is missing.");
           return;
         }
 
-        const items = await _sp.web.lists.getByTitle("Grades List").items();
-        console.log("Fetched Grades List items:", items);
-        setGradesList(items);
+        const [gradesItems, moduleItems] = await Promise.all([
+          _sp.web.lists.getByTitle("Grades List").items(),
+          _sp.web.lists.getByTitle("LMS Modules").items()
+        ]);
+
+        const mergedData: IGrades[] = moduleItems.map(mod => {
+          const gradeEntry = gradesItems.find(grade => grade.ModuleNumber === mod.ModuleNumber);
+
+          return {
+            Id: gradeEntry?.Id,
+            ModuleNumber: mod.ModuleNumber,
+            Title: mod.Title,
+            QuizScore: gradeEntry?.QuizScore,
+            ExamScore: gradeEntry?.ExamScore,
+            QuizMaxScore: mod?.Test?.MaximumScore ?? 5,
+            ExamMaxScore: mod?.Exam?.MaximumScore ?? 10,
+            HasExam: !!mod?.Exam
+          };
+        });
+
+        setGradesList(mergedData);
       } catch (error) {
-        console.error("Error fetching Grades List:", error);
+        console.error("Error fetching grades and modules:", error);
       }
     };
 
-    fetchGrades();
+    fetchGradesWithMetadata();
   }, []);
 
   const toggleGrades = () => {
@@ -61,20 +79,42 @@ const GradesTracker = (props: { context: any }) => {
                     <label style={{ fontWeight: 600, color: "#000" }}>Quiz Score</label>
                     <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 4 }}>
                       <div style={{ flex: 1, backgroundColor: "#eee", height: 6, borderRadius: 3 }}>
-                        <div style={{ width: `${((module.QuizScore ?? 0) / 5) * 100}%`, height: "100%", background: "#FFCC00", borderRadius: 3, transition: "width 0.3s ease" }} />
+                        <div
+                          style={{
+                            width: `${((module.QuizScore ?? 0) / (module.QuizMaxScore ?? 5)) * 100}%`,
+                            height: "100%",
+                            background: "#FFCC00",
+                            borderRadius: 3,
+                            transition: "width 0.3s ease"
+                          }}
+                        />
                       </div>
-                      <span style={{ fontWeight: 600, color: "#FFCC00" }}>{module.QuizScore ?? "N/A"}</span>
+                      <span style={{ fontWeight: 600, color: "#FFCC00" }}>
+                        {(module.QuizScore !== undefined && module.QuizMaxScore)
+                          ? `${module.QuizScore}/${module.QuizMaxScore} (${Math.round((module.QuizScore / module.QuizMaxScore) * 100)}%)`
+                          : "N/A"}
+                      </span>
                     </div>
                   </div>
 
-                  {module.ExamScore !== undefined && (
+                  {module.HasExam && module.ExamScore !== undefined && module.ExamMaxScore !== undefined && (
                     <div>
                       <label style={{ fontWeight: 600, color: "#000" }}>Exam Score</label>
                       <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 4 }}>
                         <div style={{ flex: 1, backgroundColor: "#eee", height: 6, borderRadius: 3 }}>
-                          <div style={{ width: `${(module.ExamScore / 10) * 100}%`, height: "100%", background: "#00C853", borderRadius: 3, transition: "width 0.3s ease" }} />
+                          <div
+                            style={{
+                              width: `${((module.ExamScore ?? 0) / (module.ExamMaxScore ?? 10)) * 100}%`,
+                              height: "100%",
+                              background: "#00C853",
+                              borderRadius: 3,
+                              transition: "width 0.3s ease"
+                            }}
+                          />
                         </div>
-                        <span style={{ fontWeight: 600, color: "#00C853" }}>{module.ExamScore}</span>
+                        <span style={{ fontWeight: 600, color: "#00C853" }}>
+                          {`${module.ExamScore}/${module.ExamMaxScore} (${Math.round((module.ExamScore / module.ExamMaxScore) * 100)}%)`}
+                        </span>
                       </div>
                     </div>
                   )}
