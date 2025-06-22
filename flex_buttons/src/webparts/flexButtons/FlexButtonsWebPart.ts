@@ -29,6 +29,10 @@ export default class FlexButtonsWebPart extends BaseClientSideWebPart<IFlexButto
     ReactDom.render(element, this.domElement);
   }
 
+  public onDispose(): void {
+      ReactDom.unmountComponentAtNode(this.domElement);
+  }
+
   protected getPropertyPaneConfiguration(): IPropertyPaneConfiguration {
     return {
       pages: [
