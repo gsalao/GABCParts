@@ -13,4 +13,8 @@ export default class ModuleTrackerWebPart extends BaseClientSideWebPart<{}> {
 
     ReactDom.render(element, this.domElement);
   }
+
+  public onDispose(): void {
+      ReactDom.unmountComponentAtNode(this.domElement);
+  }
 }

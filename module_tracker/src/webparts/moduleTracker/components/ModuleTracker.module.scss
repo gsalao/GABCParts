@@ -1,11 +1,11 @@
 @import '~@fluentui/react/dist/sass/References.scss';
 
-.module-tracker {
+.moduleTracker {
   border: 1px solid #ccc;
   border-radius: 12px;
   font-family: sans-serif;
 
-  .toggle-header {
+  .toggleHeader {
     background: #000;
     color: #ffcc00;
     padding: 16px;
@@ -17,12 +17,12 @@
     align-items: center;
   }
 
-  .total-wrapper {
+  .totalWrapper {
     background: #f9f9f9;
     padding: 16px;
     text-align: center;
 
-    .bar-wrap {
+    .barWrap {
       height: 8px;
       background: #ddd;
       border-radius: 6px;
@@ -37,10 +37,10 @@
     }
   }
 
-  .module-block {
+  .moduleBlock {
     border-top: 1px solid #ccc;
 
-    .module-header {
+    .moduleHeader {
       background: #aaa;
       padding: 14px 20px;
       cursor: pointer;
@@ -50,11 +50,11 @@
       font-weight: 600;
     }
 
-    .module-detail {
+    .moduleDetail {
       padding: 16px 20px;
       background: #fff;
 
-      .progress-group {
+      .progressGroup {
         margin-bottom: 14px;
 
         label {
@@ -62,7 +62,7 @@
           margin-bottom: 4px;
         }
 
-        .bar-wrap {
+        .barWrap {
           height: 6px;
           background: #e0e0e0;
           border-radius: 4px;

@@ -6,6 +6,39 @@ import { SPFI } from "@pnp/sp";
 import { getSP } from "../../../pnpjsConfig";
 import { Icon } from "@fluentui/react";
 
+const ProgressLabel = ({ label, percent }: { label: string; percent: number }): JSX.Element => (
+  <div style={{ marginBottom: 12 }}>
+    <label style={{ fontWeight: 600, color: "#000" }}>{label}</label>
+    <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 4 }}>
+      <div style={{ flex: 1, backgroundColor: "#eee", height: 6, borderRadius: 3 }}>
+        <div style={{
+          width: `${percent}%`,
+          height: "100%",
+          background: "#bf9902",
+          borderRadius: 3,
+          transition: "width 0.3s ease"
+        }} />
+      </div>
+      <span style={{ fontWeight: 600, color: "#bf9902" }}>{percent}%</span>
+    </div>
+  </div>
+);
+
+const ProgressBar = ({ percent }: { percent: number }): JSX.Element => (
+  <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 4 }}>
+    <div style={{ flex: 1, backgroundColor: "#eee", height: 6, borderRadius: 3 }}>
+      <div style={{
+        width: `${percent}%`,
+        height: "100%",
+        background: "#bf9902",
+        borderRadius: 3,
+        transition: "width 0.3s ease"
+      }} />
+    </div>
+    <span style={{ fontWeight: 600, color: "#bf9902" }}>{percent}%</span>
+  </div>
+);
+
 const ModuleTracker: React.FC<IModuleTrackerProps> = ({ context }) => {
   const _sp: SPFI = getSP(context);
   const [modules, setModules] = useState<IModuleProgress[]>([]);
@@ -13,7 +46,7 @@ const ModuleTracker: React.FC<IModuleTrackerProps> = ({ context }) => {
   const [trackerOpen, setTrackerOpen] = useState(false);
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchData = async (): Promise<void> => {
       const [moduleItems, progressItems] = await Promise.all([
         _sp.web.lists.getByTitle("LMS Modules").items(),
         _sp.web.lists.getByTitle("Module Progress List").items()
@@ -34,11 +67,11 @@ const ModuleTracker: React.FC<IModuleTrackerProps> = ({ context }) => {
       setModules(merged);
     };
 
-    fetchData();
+    fetchData().catch((err) => console.error("Unhandled error from fetchData: ", err));
   }, []);
 
-  const toggleTracker = () => setTrackerOpen(prev => !prev);
-  const toggleModule = (num: number) => setExpandedModules(prev => ({ ...prev, [num]: !prev[num] }));
+  const toggleTracker = (): void => setTrackerOpen(prev => !prev);
+  const toggleModule = (num: number): void => setExpandedModules(prev => ({ ...prev, [num]: !prev[num] }));
 
   const totalPercent =
     modules.length > 0
@@ -98,38 +131,5 @@ const ModuleTracker: React.FC<IModuleTrackerProps> = ({ context }) => {
     </div>
   );
 };
-
-const ProgressLabel = ({ label, percent }: { label: string; percent: number }) => (
-  <div style={{ marginBottom: 12 }}>
-    <label style={{ fontWeight: 600, color: "#000" }}>{label}</label>
-    <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 4 }}>
-      <div style={{ flex: 1, backgroundColor: "#eee", height: 6, borderRadius: 3 }}>
-        <div style={{
-          width: `${percent}%`,
-          height: "100%",
-          background: "#bf9902",
-          borderRadius: 3,
-          transition: "width 0.3s ease"
-        }} />
-      </div>
-      <span style={{ fontWeight: 600, color: "#bf9902" }}>{percent}%</span>
-    </div>
-  </div>
-);
-
-const ProgressBar = ({ percent }: { percent: number }) => (
-  <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 4 }}>
-    <div style={{ flex: 1, backgroundColor: "#eee", height: 6, borderRadius: 3 }}>
-      <div style={{
-        width: `${percent}%`,
-        height: "100%",
-        background: "#FFCC00",
-        borderRadius: 3,
-        transition: "width 0.3s ease"
-      }} />
-    </div>
-    <span style={{ fontWeight: 600, color: "#FFCC00" }}>{percent}%</span>
-  </div>
-);
 
 export default ModuleTracker;
