@@ -35,6 +35,6 @@
     ]
   },
   "paths": {
-    "zippedPackage": "solution/samples.sppkg"
+    "zippedPackage": "solution/module-set-dropdown.sppkg"
   }
 }
