@@ -35,6 +35,6 @@
     ]
   },
   "paths": {
-    "zippedPackage": "solution/five-column.sppkg"
+    "zippedPackage": "solution/five-column-buttons.sppkg"
   }
 }
