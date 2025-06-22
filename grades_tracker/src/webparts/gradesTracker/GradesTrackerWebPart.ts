@@ -13,4 +13,8 @@ export default class GradesWebPart extends BaseClientSideWebPart<{}> {
   protected get dataVersion(): Version {
     return Version.parse("1.0");
   }
+
+  public onDispose(): void {
+        ReactDom.unmountComponentAtNode(this.domElement);
+  }
 }

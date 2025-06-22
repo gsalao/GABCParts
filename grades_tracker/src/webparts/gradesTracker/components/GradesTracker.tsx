@@ -4,15 +4,16 @@ import { Icon } from "@fluentui/react";
 import { IGrades } from "../../../interfaces";
 import { SPFI } from "@pnp/sp";
 import { getSP } from "../../../pnpjsConfig";
+import { WebPartContext } from "@microsoft/sp-webpart-base";
 
-const GradesTracker = (props: { context: any }) => {
+const GradesTracker = (props: { context: WebPartContext }): JSX.Element => {
   const _sp: SPFI | undefined = getSP(props.context);
   const [gradesList, setGradesList] = useState<IGrades[]>([]);
   const [expandedModules, setExpandedModules] = useState<{ [key: number]: boolean }>({});
   const [gradesOpen, setGradesOpen] = useState(false);
 
   useEffect(() => {
-    const fetchGradesWithMetadata = async () => {
+    const fetchGradesWithMetadata = async (): Promise<void> => {
       try {
         if (!_sp) {
           console.error("SP context is missing.");
@@ -45,15 +46,15 @@ const GradesTracker = (props: { context: any }) => {
       }
     };
 
-    fetchGradesWithMetadata();
+    fetchGradesWithMetadata().catch((err) => console.error("Unhandled error from fetchGradesWithMetadata", err));
   }, []);
 
-  const toggleGrades = () => {
+  const toggleGrades = (): void => {
     setGradesOpen(prev => !prev);
     console.log("Grades Accordion Toggled:", !gradesOpen);
   };
 
-  const toggleModule = (moduleId: number) => {
+  const toggleModule = (moduleId: number): void => {
     setExpandedModules(prev => ({ ...prev, [moduleId]: !prev[moduleId] }));
   };
 
