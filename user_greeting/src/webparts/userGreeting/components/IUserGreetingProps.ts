@@ -1,5 +1,11 @@
-import { IUserProfile } from '../../../interfaces';
-
+// import { IUserProfile } from '../../../interfaces';
 export interface IUserGreetingProps {
-  userProfile: IUserProfile;
+  userProfile: {
+    displayName: string;
+    role: string;
+    pictureUrl: string;
+  };
+  greetingStyle?: React.CSSProperties;
+  roleStyle?: React.CSSProperties;
+  imageStyle?: React.CSSProperties;
 }

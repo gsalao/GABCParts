@@ -10,7 +10,7 @@ const getInitials = (displayName: string): string => {
     .toUpperCase();
 };
 
-const UserGreeting: React.FC<IUserGreetingProps> = ({ userProfile }) => {
+const UserGreeting: React.FC<IUserGreetingProps> = ({ userProfile, greetingStyle, roleStyle, imageStyle }) => {
   const [imageError, setImageError] = React.useState(false);
 
   return (
@@ -24,12 +24,13 @@ const UserGreeting: React.FC<IUserGreetingProps> = ({ userProfile }) => {
           src={userProfile.pictureUrl}
           alt={`${userProfile.displayName}'s profile picture`}
           className={styles.profilePic}
+          style={imageStyle}
           onError={() => setImageError(true)}
         />
       )}
       <div>
-        <h2>Welcome, {userProfile.displayName}!</h2>
-        {userProfile.role && <p>{userProfile.role}</p>}
+        <h2 style={greetingStyle}>Welcome, {userProfile.displayName}!</h2>
+        {userProfile.role && <p style={roleStyle}>{userProfile.role}</p>}
       </div>
     </div>
   );
