@@ -29,6 +29,7 @@ const Faq = (props: IFaqProps): JSX.Element => {
 
   const [watchedVideos, setWatchedVideos] = useState<{ [key: number]: { [videoId: number]: boolean } }>({});
 
+  // CHORE : edit countdown feed based on countdown input
   const [quizCountdowns, setQuizCountdowns] = useState<{ [key: number]: number }>({});
   const [examCountdowns, setExamCountdowns] = useState<{ [key: number]: number }>({});
 
