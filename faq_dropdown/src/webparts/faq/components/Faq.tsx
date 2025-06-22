@@ -78,9 +78,9 @@ const Faq = (props: IFaqProps): JSX.Element => {
         Title: moduleTitle,
         ModuleNumber: moduleNumber,
         ModuleProgress: progress,
-        VideoProgress: videoProgress, // ✅ Corrected calculation
-        QuizProgress: quizScores[moduleId] >= quizPassingScore ? 100 : 0,
-        ExamProgress: examScores[moduleId] >= examPassingScore ? 100 : 0,
+        VideoProgress: videoProgress,
+        QuizProgress: quizScores[moduleId] >= quizPassingScore ? 100 : null,
+        ExamProgress: examScores[moduleId] >= examPassingScore ? 100 : null,
       };  
 
       if (existingItems.length > 0) {
@@ -321,7 +321,7 @@ const Faq = (props: IFaqProps): JSX.Element => {
 
             {isOpen && (
               <div style={{ padding: 24 }}>
-                <h3 style={{ borderBottom: "3px solid #FFCC00", paddingBottom: 6, color: "#000" }}>WorkingDescription</h3>
+                <h3 style={{ borderBottom: "3px solid #FFCC00", paddingBottom: 6, color: "#000" }}>Description</h3>
                 <p>{item.Body}</p>
 
                 <hr style={{ margin: "20px 0", border: "1px solid #ccc" }} />
