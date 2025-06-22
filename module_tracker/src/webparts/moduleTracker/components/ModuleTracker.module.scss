@@ -1,34 +1,85 @@
 @import '~@fluentui/react/dist/sass/References.scss';
 
-.moduleTracker {
-  overflow: hidden;
-  padding: 1em;
-  color: "[theme:bodyText, default: #323130]";
-  color: var(--bodyText);
-  &.teams {
-    font-family: $ms-font-family-fallbacks;
+.module-tracker {
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  font-family: sans-serif;
+
+  .toggle-header {
+    background: #000;
+    color: #ffcc00;
+    padding: 16px;
+    font-weight: bold;
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
   }
-}
 
-.welcome {
-  text-align: center;
-}
+  .total-wrapper {
+    background: #f9f9f9;
+    padding: 16px;
+    text-align: center;
 
-.welcomeImage {
-  width: 100%;
-  max-width: 420px;
-}
+    .bar-wrap {
+      height: 8px;
+      background: #ddd;
+      border-radius: 6px;
+      overflow: hidden;
+      margin: 8px 0;
+    }
 
-.links {
-  a {
-    text-decoration: none;
-    color: "[theme:link, default:#03787c]";
-    color: var(--link); // note: CSS Custom Properties support is limited to modern browsers only
+    .bar {
+      height: 100%;
+      background: #ffcc00;
+      transition: width 0.3s;
+    }
+  }
 
-    &:hover {
-      text-decoration: underline;
-      color: "[theme:linkHovered, default: #014446]";
-      color: var(--linkHovered); // note: CSS Custom Properties support is limited to modern browsers only
+  .module-block {
+    border-top: 1px solid #ccc;
+
+    .module-header {
+      background: #aaa;
+      padding: 14px 20px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 600;
+    }
+
+    .module-detail {
+      padding: 16px 20px;
+      background: #fff;
+
+      .progress-group {
+        margin-bottom: 14px;
+
+        label {
+          display: block;
+          margin-bottom: 4px;
+        }
+
+        .bar-wrap {
+          height: 6px;
+          background: #e0e0e0;
+          border-radius: 4px;
+          overflow: hidden;
+        }
+
+        .bar {
+          height: 100%;
+          background-color: #0078d4;
+          transition: width 0.3s ease;
+        }
+
+        span {
+          font-weight: bold;
+          margin-left: 8px;
+        }
+      }
     }
   }
 }

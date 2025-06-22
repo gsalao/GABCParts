@@ -1,43 +1,135 @@
-import * as React from 'react';
-import styles from './ModuleTracker.module.scss';
-import type { IModuleTrackerProps } from './IModuleTrackerProps';
-import { escape } from '@microsoft/sp-lodash-subset';
+import * as React from "react";
+import { useEffect, useState } from "react";
+import { IModuleTrackerProps } from "./IModuleTrackerProps";
+import { IModuleProgress } from "../../../interfaces";
+import { SPFI } from "@pnp/sp";
+import { getSP } from "../../../pnpjsConfig";
+import { Icon } from "@fluentui/react";
 
-export default class ModuleTracker extends React.Component<IModuleTrackerProps> {
-  public render(): React.ReactElement<IModuleTrackerProps> {
-    const {
-      description,
-      isDarkTheme,
-      environmentMessage,
-      hasTeamsContext,
-      userDisplayName
-    } = this.props;
+const ModuleTracker: React.FC<IModuleTrackerProps> = ({ context }) => {
+  const _sp: SPFI = getSP(context);
+  const [modules, setModules] = useState<IModuleProgress[]>([]);
+  const [expandedModules, setExpandedModules] = useState<{ [key: number]: boolean }>({});
+  const [trackerOpen, setTrackerOpen] = useState(false);
 
-    return (
-      <section className={`${styles.moduleTracker} ${hasTeamsContext ? styles.teams : ''}`}>
-        <div className={styles.welcome}>
-          <img alt="" src={isDarkTheme ? require('../assets/welcome-dark.png') : require('../assets/welcome-light.png')} className={styles.welcomeImage} />
-          <h2>Well done, {escape(userDisplayName)}!</h2>
-          <div>{environmentMessage}</div>
-          <div>Web part property value: <strong>{escape(description)}</strong></div>
+  useEffect(() => {
+    const fetchData = async () => {
+      const [moduleItems, progressItems] = await Promise.all([
+        _sp.web.lists.getByTitle("LMS Modules").items(),
+        _sp.web.lists.getByTitle("Module Progress List").items()
+      ]);
+
+      const merged: IModuleProgress[] = moduleItems.map(mod => {
+        const progress = progressItems.find(p => p.ModuleNumber === mod.ModuleNumber);
+
+        return {
+          ModuleNumber: mod.ModuleNumber,
+          Title: mod.Title,
+          VideoProgress: progress?.VideoProgress ?? 0,
+          QuizProgress: progress?.QuizProgress ?? 0,
+          ExamProgress: mod.Exam ? progress?.ExamProgress ?? 0 : undefined
+        };
+      });
+
+      setModules(merged);
+    };
+
+    fetchData();
+  }, []);
+
+  const toggleTracker = () => setTrackerOpen(prev => !prev);
+  const toggleModule = (num: number) => setExpandedModules(prev => ({ ...prev, [num]: !prev[num] }));
+
+  const totalPercent =
+    modules.length > 0
+      ? Math.round(
+          modules.reduce((acc, m) => {
+            const parts = 2 + (m.ExamProgress !== undefined ? 1 : 0);
+            const sum = m.VideoProgress + m.QuizProgress + (m.ExamProgress ?? 0);
+            return acc + sum / parts;
+          }, 0) / modules.length
+        )
+      : 0;
+
+  return (
+    <div style={{ borderRadius: "12px", boxShadow: "0px 4px 10px rgba(0,0,0,0.15)", marginBottom: "24px", overflow: "hidden", border: "1px solid #ddd" }}>
+      <div onClick={toggleTracker} style={{ background: "#000000", color: "#FFCC00", padding: "16px", cursor: "pointer", fontWeight: 600, display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "1.2rem" }}>
+        <span>Module Tracker</span>
+        <Icon iconName={trackerOpen ? "ChevronDown" : "ChevronRight"} styles={{ root: { fontSize: 20, color: "#FFCC00" } }} />
+      </div>
+
+      {trackerOpen && (
+        <div style={{ background: "#fff", padding: "16px 20px" }}>
+          <label style={{ fontWeight: 600, color: "#000" }}>Total Progress</label>
+          <ProgressBar percent={totalPercent} />
         </div>
-        <div>
-          <h3>Welcome to SharePoint Framework!</h3>
-          <p>
-            The SharePoint Framework (SPFx) is a extensibility model for Microsoft Viva, Microsoft Teams and SharePoint. It&#39;s the easiest way to extend Microsoft 365 with automatic Single Sign On, automatic hosting and industry standard tooling.
-          </p>
-          <h4>Learn more about SPFx development:</h4>
-          <ul className={styles.links}>
-            <li><a href="https://aka.ms/spfx" target="_blank" rel="noreferrer">SharePoint Framework Overview</a></li>
-            <li><a href="https://aka.ms/spfx-yeoman-graph" target="_blank" rel="noreferrer">Use Microsoft Graph in your solution</a></li>
-            <li><a href="https://aka.ms/spfx-yeoman-teams" target="_blank" rel="noreferrer">Build for Microsoft Teams using SharePoint Framework</a></li>
-            <li><a href="https://aka.ms/spfx-yeoman-viva" target="_blank" rel="noreferrer">Build for Microsoft Viva Connections using SharePoint Framework</a></li>
-            <li><a href="https://aka.ms/spfx-yeoman-store" target="_blank" rel="noreferrer">Publish SharePoint Framework applications to the marketplace</a></li>
-            <li><a href="https://aka.ms/spfx-yeoman-api" target="_blank" rel="noreferrer">SharePoint Framework API reference</a></li>
-            <li><a href="https://aka.ms/m365pnp" target="_blank" rel="noreferrer">Microsoft 365 Developer Community</a></li>
-          </ul>
+      )}
+
+      {trackerOpen && modules.map(mod => (
+        <div key={mod.ModuleNumber} style={{ borderBottom: "1px solid #ddd" }}>
+          <div onClick={() => toggleModule(mod.ModuleNumber)}
+            style={{
+              background: expandedModules[mod.ModuleNumber] ? "#000000" : "#A9A9A9",
+              color: "#fff",
+              padding: "14px 20px",
+              cursor: "pointer",
+              fontWeight: "bold",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              borderRadius: "0px"
+            }}
+          >
+            <span>Module {mod.ModuleNumber}: {mod.Title}</span>
+            <Icon iconName={expandedModules[mod.ModuleNumber] ? "ChevronDown" : "ChevronRight"} styles={{ root: { fontSize: 16, color: "#FFCC00" } }} />
+          </div>
+
+          {expandedModules[mod.ModuleNumber] && (
+            <div style={{ background: "#fff", padding: "16px 20px" }}>
+              <ProgressLabel label={`Module ${mod.ModuleNumber} Video Progress`} percent={mod.VideoProgress} />
+              <ProgressLabel label={`Module ${mod.ModuleNumber} Quiz Progress`} percent={mod.QuizProgress} />
+              {mod.ExamProgress !== undefined && (
+                <ProgressLabel label={`Module ${mod.ModuleNumber} Exam Progress`} percent={mod.ExamProgress} />
+              )}
+            </div>
+          )}
         </div>
-      </section>
-    );
-  }
-}
+      ))}
+    </div>
+  );
+};
+
+const ProgressLabel = ({ label, percent }: { label: string; percent: number }) => (
+  <div style={{ marginBottom: 12 }}>
+    <label style={{ fontWeight: 600, color: "#000" }}>{label}</label>
+    <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 4 }}>
+      <div style={{ flex: 1, backgroundColor: "#eee", height: 6, borderRadius: 3 }}>
+        <div style={{
+          width: `${percent}%`,
+          height: "100%",
+          background: "#bf9902",
+          borderRadius: 3,
+          transition: "width 0.3s ease"
+        }} />
+      </div>
+      <span style={{ fontWeight: 600, color: "#bf9902" }}>{percent}%</span>
+    </div>
+  </div>
+);
+
+const ProgressBar = ({ percent }: { percent: number }) => (
+  <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 4 }}>
+    <div style={{ flex: 1, backgroundColor: "#eee", height: 6, borderRadius: 3 }}>
+      <div style={{
+        width: `${percent}%`,
+        height: "100%",
+        background: "#FFCC00",
+        borderRadius: 3,
+        transition: "width 0.3s ease"
+      }} />
+    </div>
+    <span style={{ fontWeight: 600, color: "#FFCC00" }}>{percent}%</span>
+  </div>
+);
+
+export default ModuleTracker;
