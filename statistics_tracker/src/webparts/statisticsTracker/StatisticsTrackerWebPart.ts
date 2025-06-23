@@ -18,6 +18,10 @@ export default class StatisticsTrackerWebPart extends BaseClientSideWebPart<{}> 
     ReactDom.render(element, this.domElement);
   }
 
+  public onDispose(): void {
+      ReactDom.unmountComponentAtNode(this.domElement);
+  }
+
   protected get dataVersion(): Version {
     return Version.parse('1.0');
   }

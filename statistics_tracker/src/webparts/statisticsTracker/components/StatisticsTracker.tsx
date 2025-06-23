@@ -10,7 +10,7 @@ const StatisticsTracker: React.FC<IStatisticsTrackerProps> = ({ context }) => {
   const [grades, setGrades] = useState<IGrades[]>([]);
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchData = async (): Promise<void> => {
       try {
         const [gradesItems, moduleItems] = await Promise.all([
           _sp.web.lists.getByTitle("Grades List").items(),
@@ -36,7 +36,7 @@ const StatisticsTracker: React.FC<IStatisticsTrackerProps> = ({ context }) => {
       }
     };
 
-    fetchData();
+    fetchData().catch((err) => console.error("Unhandled error from fetchData: ", err));
   }, []);
 
   const totalQuizzes = grades.length;
