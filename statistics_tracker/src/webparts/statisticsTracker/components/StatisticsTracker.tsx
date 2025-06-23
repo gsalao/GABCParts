@@ -49,9 +49,13 @@ const StatisticsTracker: React.FC<IStatisticsTrackerProps> = ({ context }) => {
 
   const totalCompletion = Math.round((quizCompletion + examCompletion) / 2);
 
+  const today = new Date();
+  const formatter = new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric' });
+  const currentPeriod = formatter.format(today); // e.g. "June 2025"
+
   return (
     <div style={{
-      backgroundColor: '#fff',
+      backgroundColor: '#000',
       borderRadius: 16,
       padding: 24,
       display: 'flex',
@@ -64,12 +68,16 @@ const StatisticsTracker: React.FC<IStatisticsTrackerProps> = ({ context }) => {
     }}>
       {/* Left Side: Labels */}
       <div style={{ flex: 1 }}>
-        <h2 style={{ fontSize: 22, fontWeight: 700, color: '#000' }}>Statistics</h2>
-        <p style={{ color: '#888', marginBottom: 20 }}>June – Sept 2025</p>
-
+        <div style={{ marginBottom: 20 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <span style={{ fontSize: 22, fontWeight: 700, color: '#FFCC00' }}>Statistics</span>
+            <span style={{ color: '#e6e6e6', fontSize: 14 }}>{currentPeriod}</span>
+          </div>
+        </div>
+        
         <div style={{ display: 'flex', alignItems: 'center', marginBottom: 20 }}>
           <div style={{
-            backgroundColor: '#5AC67E',
+            backgroundColor: '#FFCC00',
             borderRadius: '50%',
             width: 40,
             height: 40,
@@ -81,14 +89,14 @@ const StatisticsTracker: React.FC<IStatisticsTrackerProps> = ({ context }) => {
             <span style={{ fontSize: 20, color: '#fff' }}>📄</span>
           </div>
           <div>
-            <div style={{ color: '#888', fontWeight: 600 }}>Quizzes</div>
-            <div style={{ fontSize: 18, fontWeight: 700, color: '#000' }}>{quizCompletion}%</div>
+            <div style={{ color: '#e6e6e6', fontWeight: 600 }}>Quizzes</div>
+            <div style={{ fontSize: 18, fontWeight: 700, color: '#FFCC00' }}>{quizCompletion}%</div>
           </div>
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center' }}>
           <div style={{
-            backgroundColor: '#FFB74D',
+            backgroundColor: '#FFCC00',
             borderRadius: '50%',
             width: 40,
             height: 40,
@@ -100,8 +108,8 @@ const StatisticsTracker: React.FC<IStatisticsTrackerProps> = ({ context }) => {
             <span style={{ fontSize: 20, color: '#fff' }}>⏰</span>
           </div>
           <div>
-            <div style={{ color: '#888', fontWeight: 600 }}>Exams</div>
-            <div style={{ fontSize: 18, fontWeight: 700, color: '#000' }}>{examCompletion}%</div>
+            <div style={{ color: '#e6e6e6', fontWeight: 600 }}>Exams</div>
+            <div style={{ fontSize: 18, fontWeight: 700, color: '#FFCC00' }}>{examCompletion}%</div>
           </div>
         </div>
       </div>
@@ -111,7 +119,7 @@ const StatisticsTracker: React.FC<IStatisticsTrackerProps> = ({ context }) => {
         width: 160,
         height: 160,
         borderRadius: '50%',
-        background: `conic-gradient(#4CAF50 ${totalCompletion * 3.6}deg, #e6e6e6 0deg)`,
+        background: `conic-gradient(#bf9902 ${totalCompletion * 3.6}deg, #e6e6e6 0deg)`,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -128,7 +136,7 @@ const StatisticsTracker: React.FC<IStatisticsTrackerProps> = ({ context }) => {
           justifyContent: 'center',
           flexDirection: 'column'
         }}>
-          <div style={{ fontSize: 24, fontWeight: 700, color: '#4CAF50' }}>{totalCompletion}%</div>
+          <div style={{ fontSize: 24, fontWeight: 700, color: '#bf9902' }}>{totalCompletion}%</div>
           <div style={{ fontSize: 14, color: '#888' }}>Tasks Completed</div>
         </div>
       </div>
