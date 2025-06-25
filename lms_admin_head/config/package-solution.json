@@ -1,0 +1,40 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/package-solution.schema.json",
+  "solution": {
+    "name": "lms-admin-head-client-side-solution",
+    "id": "ee1e2fd2-8edb-4d0e-85d7-b050a8dc1cf1",
+    "version": "1.0.0.0",
+    "includeClientSideAssets": true,
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "developer": {
+      "name": "",
+      "websiteUrl": "",
+      "privacyUrl": "",
+      "termsOfUseUrl": "",
+      "mpnId": "Undefined-1.21.1"
+    },
+    "metadata": {
+      "shortDescription": {
+        "default": "lms-admin-head description"
+      },
+      "longDescription": {
+        "default": "lms-admin-head description"
+      },
+      "screenshotPaths": [],
+      "videoUrl": "",
+      "categories": []
+    },
+    "features": [
+      {
+        "title": "lms-admin-head Feature",
+        "description": "The feature that activates elements of the lms-admin-head solution.",
+        "id": "d53dca9d-f9c5-46a7-8d51-b609f7d3c116",
+        "version": "1.0.0.0"
+      }
+    ]
+  },
+  "paths": {
+    "zippedPackage": "solution/lms-admin-head.sppkg"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/config.2.0.schema.json",
+  "version": "2.0",
+  "bundles": {
+    "lms-admin-head-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/lmsAdminHead/LmsAdminHeadWebPart.js",
+          "manifest": "./src/webparts/lmsAdminHead/LmsAdminHeadWebPart.manifest.json"
+        }
+      ]
+    }
+  },
+  "externals": {},
+  "localizedResources": {
+    "LmsAdminHeadWebPartStrings": "lib/webparts/lmsAdminHead/loc/{locale}.js"
+  }
+}

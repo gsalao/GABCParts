@@ -1,0 +1,18 @@
+{
+  "@microsoft/generator-sharepoint": {
+    "plusBeta": false,
+    "isCreatingSolution": true,
+    "nodeVersion": "20.11.1",
+    "sdksVersions": {},
+    "version": "1.21.1",
+    "libraryName": "lms-admin-head",
+    "libraryId": "ee1e2fd2-8edb-4d0e-85d7-b050a8dc1cf1",
+    "environment": "spo",
+    "packageManager": "npm",
+    "solutionName": "lms-admin-head",
+    "solutionShortDescription": "lms-admin-head description",
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "componentType": "webpart"
+  }
+}
