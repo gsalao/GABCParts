@@ -49,6 +49,17 @@ export default class ModuleTrackerWebPart extends BaseClientSideWebPart<IModuleT
     return Version.parse('1.0');
   }
 
+  protected async onInit(): Promise<void> {
+    this.properties.headerFont = this.properties.headerFont ?? "#FFCC00";
+    this.properties.headerBackground = this.properties.headerBackground ?? "#000000";
+    this.properties.moduleProgressColor = this.properties.moduleProgressColor ?? "#bf9902";
+    this.properties.moduleHeaderFont = this.properties.moduleHeaderFont ?? "#fff";
+    this.properties.moduleInternalFont = this.properties.moduleInternalFont ?? "#000";
+    this.properties.moduleHeaderBackground = this.properties.moduleHeaderBackground ?? "#000";
+    this.properties.moduleInternalBackground = this.properties.moduleInternalBackground ?? "#fff";
+  }
+
+
   protected getPropertyPaneConfiguration(): IPropertyPaneConfiguration {
     return {
       pages: [
