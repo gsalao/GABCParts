@@ -5,7 +5,20 @@ import { SPFI } from '@pnp/sp';
 import { getSP } from '../../../pnpjsConfig';
 import { IGrades } from '../../../interfaces';
 
-const StatisticsTracker: React.FC<IStatisticsTrackerProps> = ({ context }) => {
+const StatisticsTracker: React.FC<IStatisticsTrackerProps> = 
+  (
+    {
+      context, 
+      webpartBackground,
+      headerFont,
+      secondaryFont,
+      iconBackground,
+      circleBackground,
+      taskFont,
+      progressDown,
+      progressUp
+    }  
+  ) => {
   const _sp: SPFI = getSP(context);
   const [grades, setGrades] = useState<IGrades[]>([]);
 
@@ -55,7 +68,7 @@ const StatisticsTracker: React.FC<IStatisticsTrackerProps> = ({ context }) => {
 
   return (
     <div style={{
-      backgroundColor: '#000',
+      backgroundColor: webpartBackground,
       borderRadius: 16,
       padding: 24,
       display: 'flex',
@@ -70,14 +83,14 @@ const StatisticsTracker: React.FC<IStatisticsTrackerProps> = ({ context }) => {
       <div style={{ flex: 1 }}>
         <div style={{ marginBottom: 20 }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-            <span style={{ fontSize: 22, fontWeight: 700, color: '#FFCC00' }}>Statistics</span>
-            <span style={{ color: '#e6e6e6', fontSize: 14 }}>{currentPeriod}</span>
+            <span style={{ fontSize: 22, fontWeight: 700, color: headerFont }}>Statistics</span>
+            <span style={{ color: secondaryFont, fontSize: 14 }}>{currentPeriod}</span>
           </div>
         </div>
         
         <div style={{ display: 'flex', alignItems: 'center', marginBottom: 20 }}>
           <div style={{
-            backgroundColor: '#FFCC00',
+            backgroundColor: iconBackground,
             borderRadius: '50%',
             width: 40,
             height: 40,
@@ -89,14 +102,14 @@ const StatisticsTracker: React.FC<IStatisticsTrackerProps> = ({ context }) => {
             <span style={{ fontSize: 20, color: '#fff' }}>📄</span>
           </div>
           <div>
-            <div style={{ color: '#e6e6e6', fontWeight: 600 }}>Quizzes</div>
-            <div style={{ fontSize: 18, fontWeight: 700, color: '#FFCC00' }}>{quizCompletion}%</div>
+            <div style={{ color: secondaryFont, fontWeight: 600 }}>Quizzes</div>
+            <div style={{ fontSize: 18, fontWeight: 700, color: iconBackground }}>{quizCompletion}%</div>
           </div>
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center' }}>
           <div style={{
-            backgroundColor: '#FFCC00',
+            backgroundColor: iconBackground,
             borderRadius: '50%',
             width: 40,
             height: 40,
@@ -108,8 +121,8 @@ const StatisticsTracker: React.FC<IStatisticsTrackerProps> = ({ context }) => {
             <span style={{ fontSize: 20, color: '#fff' }}>⏰</span>
           </div>
           <div>
-            <div style={{ color: '#e6e6e6', fontWeight: 600 }}>Exams</div>
-            <div style={{ fontSize: 18, fontWeight: 700, color: '#FFCC00' }}>{examCompletion}%</div>
+            <div style={{ color: secondaryFont, fontWeight: 600 }}>Exams</div>
+            <div style={{ fontSize: 18, fontWeight: 700, color: iconBackground }}>{examCompletion}%</div>
           </div>
         </div>
       </div>
@@ -119,7 +132,7 @@ const StatisticsTracker: React.FC<IStatisticsTrackerProps> = ({ context }) => {
         width: 160,
         height: 160,
         borderRadius: '50%',
-        background: `conic-gradient(#bf9902 ${totalCompletion * 3.6}deg, #e6e6e6 0deg)`,
+        background: `conic-gradient(${progressUp} ${totalCompletion * 3.6}deg, ${ progressDown} 0deg)`,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -129,15 +142,15 @@ const StatisticsTracker: React.FC<IStatisticsTrackerProps> = ({ context }) => {
           position: 'absolute',
           width: 120,
           height: 120,
-          background: '#fff',
+          background: circleBackground,
           borderRadius: '50%',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           flexDirection: 'column'
         }}>
-          <div style={{ fontSize: 24, fontWeight: 700, color: '#bf9902' }}>{totalCompletion}%</div>
-          <div style={{ fontSize: 14, color: '#888' }}>Tasks Completed</div>
+          <div style={{ fontSize: 24, fontWeight: 700, color: progressUp }}>{totalCompletion}%</div>
+          <div style={{ fontSize: 14, color: taskFont }}>Tasks Completed</div>
         </div>
       </div>
     </div>
