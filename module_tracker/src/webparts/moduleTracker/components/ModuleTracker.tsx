@@ -103,7 +103,7 @@ const ModuleTracker: React.FC<IModuleTrackerProps> =
         <div key={mod.ModuleNumber} style={{ borderBottom: "1px solid #ddd" }}>
           <div onClick={() => toggleModule(mod.ModuleNumber)}
             style={{
-              background: expandedModules[mod.ModuleNumber] ? (moduleHeaderBackground ?? "000") : "#A9A9A9",
+              background: expandedModules[mod.ModuleNumber] ? (moduleHeaderBackground ?? "#000") : "#A9A9A9",
               color: moduleHeaderFont ?? "#fff",
               padding: "14px 20px",
               cursor: "pointer",
