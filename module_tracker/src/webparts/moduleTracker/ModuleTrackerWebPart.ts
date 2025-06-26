@@ -50,7 +50,7 @@ export default class ModuleTrackerWebPart extends BaseClientSideWebPart<IModuleT
   }
 
   protected async onInit(): Promise<void> {
-    this.properties.headerFont = this.properties.headerFont ?? "#FFCC00";
+    this.properties.headerFont = this.properties.headerFont ?? "#ffcc00";
     this.properties.headerBackground = this.properties.headerBackground ?? "#000000";
     this.properties.moduleProgressColor = this.properties.moduleProgressColor ?? "#bf9902";
     this.properties.moduleHeaderFont = this.properties.moduleHeaderFont ?? "#fff";

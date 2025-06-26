@@ -50,13 +50,13 @@ export default class LMSModulesWebPart extends BaseClientSideWebPart<ILMSModules
   protected async onInit(): Promise<void> {
     this.properties.moduleHeaderFont = this.properties.moduleHeaderFont ?? "#fff",
     this.properties.moduleHeaderBackground = this.properties.moduleHeaderBackground ?? "#000",
-    this.properties.moduleProgressBarUp =  this.properties.moduleProgressBarUp ?? "#FFCC00",
+    this.properties.moduleProgressBarUp =  this.properties.moduleProgressBarUp ?? "#ffcc00",
     this.properties.moduleProgressBarDown = this.properties.moduleProgressBarDown ?? "#eee",
     this.properties.moduleInHeaderFont = this.properties.moduleInHeaderFont ?? "#000",
     this.properties.moduleInnerBackground = this.properties.moduleInnerBackground ?? "#ffffff",
     this.properties.descriptionFont = this.properties.descriptionFont ?? "#000",
     this.properties.lockedFont = this.properties.lockedFont ?? "#999",
-    this.properties.moduleHeaderDivider = this.properties.moduleHeaderDivider ?? "#FFCC00",
+    this.properties.moduleHeaderDivider = this.properties.moduleHeaderDivider ?? "#ffcc00",
     this.properties.moduleGeneralDivider = this.properties.moduleGeneralDivider ?? "#ccc"
   }
 
