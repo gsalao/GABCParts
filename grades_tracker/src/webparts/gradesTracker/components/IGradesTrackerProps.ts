@@ -1,4 +1,5 @@
 import { IGrades } from "../../../interfaces";
+import { WebPartContext } from "@microsoft/sp-webpart-base";
 
 export interface IGradesAccordionProps {
   gradesList: IGrades[];
@@ -8,9 +9,12 @@ export interface IGradesAccordionProps {
 }
 
 export interface IGradesTrackerProps {
-  description: string;
-  isDarkTheme: boolean;
-  environmentMessage: string;
-  hasTeamsContext: boolean;
-  userDisplayName: string;
+  context: WebPartContext;
+  headerFont?: string;
+  headerBackground?: string;
+  moduleProgressColor?: string;
+  moduleHeaderFont?: string;
+  moduleInternalFont?: string;
+  moduleHeaderBackground?: string;
+  moduleInternalBackground?: string;
 }

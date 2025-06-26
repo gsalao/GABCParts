@@ -4,10 +4,11 @@ import { Icon } from "@fluentui/react";
 import { IGrades } from "../../../interfaces";
 import { SPFI } from "@pnp/sp";
 import { getSP } from "../../../pnpjsConfig";
-import { WebPartContext } from "@microsoft/sp-webpart-base";
+import { IGradesTrackerProps } from "./IGradesTrackerProps";
 
-const GradesTracker = (props: { context: WebPartContext }): JSX.Element => {
-  const _sp: SPFI | undefined = getSP(props.context);
+const GradesTracker: React.FC<IGradesTrackerProps> = 
+  ({ context, headerFont, headerBackground, moduleProgressColor, moduleHeaderFont, moduleInternalFont, moduleHeaderBackground, moduleInternalBackground }) => {
+  const _sp: SPFI | undefined = getSP(context);
   const [gradesList, setGradesList] = useState<IGrades[]>([]);
   const [expandedModules, setExpandedModules] = useState<{ [key: number]: boolean }>({});
   const [gradesOpen, setGradesOpen] = useState(false);
@@ -60,34 +61,34 @@ const GradesTracker = (props: { context: WebPartContext }): JSX.Element => {
 
   return (
     <div style={{ borderRadius: "12px", boxShadow: "0px 4px 10px rgba(0,0,0,0.15)", marginBottom: "24px", overflow: "hidden", border: "1px solid #ddd" }}>
-      <div onClick={toggleGrades} style={{ background: "#000000", color: "#FFCC00", padding: "16px", cursor: "pointer", fontWeight: 600, display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "1.2rem" }}>
+      <div onClick={toggleGrades} style={{ background: headerBackground, color: headerFont, padding: "16px", cursor: "pointer", fontWeight: 600, display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "1.2rem" }}>
         <span>Grades</span>
-        <Icon iconName={gradesOpen ? "ChevronDown" : "ChevronRight"} styles={{ root: { fontSize: 20, color: "#FFCC00" } }} />
+        <Icon iconName={gradesOpen ? "ChevronDown" : "ChevronRight"} styles={{ root: { fontSize: 20, color: headerFont } }} />
       </div>
 
       {gradesOpen && gradesList.length > 0 ? (
-        <div style={{ background: "#fff" }}>
+        <div style={{ background: moduleInternalBackground }}>
           {gradesList.map((module) => (
             <div key={module.ModuleNumber} style={{ borderBottom: "1px solid #ddd" }}>
               <div onClick={() => toggleModule(module.ModuleNumber)} 
-              style={{ background: expandedModules[module.ModuleNumber] ? "#000000" : "#A9A9A9", color: "#fff", 
+              style={{ background: expandedModules[module.ModuleNumber] ? moduleHeaderBackground : "#A9A9A9", color: moduleHeaderFont, 
               padding: "14px 20px", cursor: "pointer", fontWeight: "bold", display: "flex", justifyContent: "space-between", 
               alignItems: "center", borderRadius: "0px" }}>
                 <span>Module {module.ModuleNumber}: {module.Title}</span>
-                <Icon iconName={expandedModules[module.ModuleNumber] ? "ChevronDown" : "ChevronRight"} styles={{ root: { fontSize: 16, color: "#FFCC00" } }} />
+                <Icon iconName={expandedModules[module.ModuleNumber] ? "ChevronDown" : "ChevronRight"} styles={{ root: { fontSize: 16, color: moduleHeaderFont } }} />
               </div>
 
               {expandedModules[module.ModuleNumber] && (
-                <div style={{ background: "#fff", padding: "16px 20px" }}>
+                <div style={{ background: moduleInternalBackground, padding: "16px 20px" }}>
                   <div style={{ marginBottom: 12 }}>
-                    <label style={{ fontWeight: 600, color: "#000" }}>Module {module.ModuleNumber} Quiz Score</label>
+                    <label style={{ fontWeight: 600, color: moduleInternalFont }}>Module {module.ModuleNumber} Quiz Score</label>
                     <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 4 }}>
                       <div style={{ flex: 1, backgroundColor: "#eee", height: 6, borderRadius: 3 }}>
                         <div
                           style={{
                             width: `${((module.QuizScore ?? 0) / (module.QuizMaxScore ?? 5)) * 100}%`,
                             height: "100%",
-                            background: "#bf9902",
+                            background: moduleProgressColor,
                             borderRadius: 3,
                             transition: "width 0.3s ease"
                           }}
@@ -98,7 +99,7 @@ const GradesTracker = (props: { context: WebPartContext }): JSX.Element => {
                           fontWeight: 600,
                           color:
                             module.QuizScore !== undefined && module.QuizMaxScore
-                              ? "#bf9902"
+                              ? moduleProgressColor
                               : "#000000",
                         }}
                       >
@@ -114,20 +115,20 @@ const GradesTracker = (props: { context: WebPartContext }): JSX.Element => {
 
                   {module.HasExam && module.ExamScore !== undefined && module.ExamMaxScore !== undefined && (
                     <div>
-                      <label style={{ fontWeight: 600, color: "#000" }}>Module {module.ModuleNumber} Exam Score</label>
+                      <label style={{ fontWeight: 600, color: moduleInternalFont }}>Module {module.ModuleNumber} Exam Score</label>
                       <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 4 }}>
                         <div style={{ flex: 1, backgroundColor: "#eee", height: 6, borderRadius: 3 }}>
                           <div
                             style={{
                               width: `${((module.ExamScore ?? 0) / (module.ExamMaxScore ?? 10)) * 100}%`,
                               height: "100%",
-                              background: "#bf9902",
+                              background: moduleProgressColor,
                               borderRadius: 3,
                               transition: "width 0.3s ease"
                             }}
                           />
                         </div>
-                        <span style={{ fontWeight: 600, color: "#bf9902" }}>
+                        <span style={{ fontWeight: 600, color: moduleProgressColor }}>
                           {`${module.ExamScore}/${module.ExamMaxScore} (${Math.round((module.ExamScore / module.ExamMaxScore) * 100)}%)`}
                         </span>
                       </div>
