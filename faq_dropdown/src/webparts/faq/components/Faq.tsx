@@ -8,8 +8,20 @@ import { Icon } from "@fluentui/react/lib/Icon";
 
 import styles from './Faq.module.scss'
 
-const Faq = (props: IFaqProps): JSX.Element => {
-  const _sp: SPFI | undefined = getSP(props.context);
+const Faq: React.FC<IFaqProps> =
+    ({  context,
+        moduleHeaderFont,
+        moduleHeaderBackground,
+        moduleProgressBarUp,
+        moduleProgressBarDown,
+        moduleInHeaderFont,
+        moduleInnerBackground,
+        descriptionFont,
+        lockedFont,
+        moduleHeaderDivider,
+        moduleGeneralDivider
+    }) => {
+  const _sp: SPFI | undefined = getSP(context);
   const [faqItems, setFaqItems] = useState<IFAQ[]>([]);
   const [progress, setProgress] = useState<{ [key: number]: number }>({});
   const [videoWatched, setVideoWatched] = useState<{ [key: number]: boolean }>({});
@@ -40,8 +52,6 @@ const Faq = (props: IFaqProps): JSX.Element => {
   const handleExamLinkClick = (moduleId: number): void => {
     setExamVisible(prev => ({ ...prev, [moduleId]: true }));
   };
-
-  // note: _0x0020_ represents the space between column Module titles
 
   const updateProgress = (moduleId: number, totalItems: number, videoId: string | number): void => {
     if (!checkboxClicked[videoId]) {
@@ -270,7 +280,7 @@ const Faq = (props: IFaqProps): JSX.Element => {
               borderRadius: "12px",
               boxShadow: "0px 4px 10px rgba(0,0,0,0.15)",
               marginBottom: "24px",
-              background: "#ffffff",
+              background: moduleInnerBackground,
               overflow: "hidden",
               border: "1px solid #ddd"
             }}
@@ -278,15 +288,15 @@ const Faq = (props: IFaqProps): JSX.Element => {
             <div
               onClick={() => !isModuleLocked && toggle(item.Id)}
               style={{
-                background: isModuleLocked ? "#666" : "#000",
-                color: "white",
+                background: isModuleLocked ? lockedFont : moduleHeaderBackground,
+                color: moduleHeaderFont,
                 padding: "16px",
                 cursor: isModuleLocked ? "not-allowed" : "pointer",
                 fontWeight: 600,
                 display: "flex",
                 justifyContent: "space-between",
                 alignItems: "center",
-                opacity: isModuleLocked ? 0.6 : 1
+                opacity: 1
               }}
             >
               <span>
@@ -294,12 +304,12 @@ const Faq = (props: IFaqProps): JSX.Element => {
               </span>
               <Icon
                 iconName={isOpen ? "ChevronDown" : "ChevronRight"}
-                styles={{ root: { fontSize: 20, color: "white", justifyContent: "center" } }}
+                styles={{ root: { fontSize: 20, color: moduleHeaderFont, justifyContent: "center" } }}
               />
               <div style={{ display: "flex", alignItems: "center", gap: 8, width: "40%" }}>
                 <div style={{
                   flex: 1,
-                  backgroundColor: "#eee",
+                  backgroundColor: moduleProgressBarDown,
                   height: 6,
                   borderRadius: 3,
                   boxShadow: "0px 2px 5px rgba(0,0,0,0.1)"
@@ -308,13 +318,13 @@ const Faq = (props: IFaqProps): JSX.Element => {
                     style={{
                       width: `${moduleProgress}%`,
                       height: "100%",
-                      background: `linear-gradient(to right, #FFCC00, #FFCC00)`,
+                      background: `linear-gradient(to right, ${moduleProgressBarUp}, ${moduleProgressBarUp})`,
                       borderRadius: 3,
                       transition: "width 0.3s ease"
                     }}
                   />
                 </div>
-                <span style={{ fontSize: "0.9rem", fontWeight: "bold", color: "#FFCC00" }}>
+                <span style={{ fontSize: "0.9rem", fontWeight: "bold", color: moduleProgressBarUp }}>
                   {`${moduleProgress.toFixed(0)}%`}
                 </span>
               </div>
@@ -322,18 +332,18 @@ const Faq = (props: IFaqProps): JSX.Element => {
 
             {isOpen && (
               <div style={{ padding: 24 }}>
-                <h3 style={{ borderBottom: "3px solid #FFCC00", paddingBottom: 6, color: "#000" }}>Description</h3>
-                <p>{item.Body}</p>
+                <h3 style={{ borderBottom: `3px solid ${moduleHeaderDivider}`, paddingBottom: 6, color: moduleInHeaderFont }}>testDescription</h3>
+                <p style={{ color: descriptionFont }}>{item.Body}</p>
 
                 <hr style={{ margin: "20px 0", border: "1px solid #ccc" }} />
 
-                <h3 style={{ borderBottom: "3px solid #FFCC00", paddingBottom: 6, color: "#000" }}>Videos</h3>
+                <h3 style={{ borderBottom: `3px solid ${moduleHeaderDivider}`, paddingBottom: 6, color: moduleInHeaderFont }}>Videos</h3>
                 {item.Videos.length > 0 ? (
                   item.Videos.map((video: IVideo, idx: number) => {
                     const isVideoLocked = idx > 0 && !checkboxClicked[item.Videos[idx - 1].Id];
                     return (
                       <div key={video.Id} style={{ marginBottom: 16 }}>
-                        <p style={{ fontWeight: 500 }}>{video.Title}</p>
+                        <p style={{ fontWeight: 500, color: descriptionFont }}>{video.Title}</p>
                         <video
                           width="100%"
                           controls={!isVideoLocked}
@@ -347,7 +357,7 @@ const Faq = (props: IFaqProps): JSX.Element => {
                           <source src={video.Url} type="video/mp4" />
                           Your browser does not support the video tag.
                         </video>
-                        {isVideoLocked && <p style={{ fontStyle: "italic", color: "#777" }}>Watch previous video first</p>}
+                        {isVideoLocked && <p style={{ fontStyle: "italic", color: lockedFont }}>Watch previous video first</p>}
                         {videoWatched[video.Id] && !watchedVideos[item.Id]?.[video.Id] && (
                             <label
                                 style={{
@@ -393,9 +403,9 @@ const Faq = (props: IFaqProps): JSX.Element => {
                   <p>No videos available.</p>
                 )}
 
-                <hr style={{ margin: "20px 0", border: "1px solid #ccc" }} />
+                <hr style={{ margin: "20px 0", border: `1px solid ${moduleGeneralDivider}` }} />
 
-                <h3 style={{ borderBottom: "3px solid #FFCC00", paddingBottom: 6, color: "#000" }}>Quiz ({item.Test.MaximumScore} Items)</h3>
+                <h3 style={{ borderBottom: `3px solid ${moduleHeaderDivider}`, paddingBottom: 6, color: moduleInHeaderFont }}>Quiz ({item.Test.MaximumScore} Items)</h3>
                 {item.Test?.Url ? (
                   allVideosDone ? (
                     <>
@@ -466,7 +476,7 @@ const Faq = (props: IFaqProps): JSX.Element => {
                       </div>
                     </>
                   ) : (
-                    <p style={{ fontStyle: "italic", color: "#999" }}>Complete all videos to unlock the quiz</p>
+                    <p style={{ fontStyle: "italic", color: lockedFont }}>Complete all videos to unlock the quiz</p>
                   )
                 ) : (
                   <p>No test available.</p>
@@ -474,9 +484,9 @@ const Faq = (props: IFaqProps): JSX.Element => {
 
                 {item.Exam?.Url && (
                   <>
-                    <hr style={{ margin: "20px 0", border: "1px solid #ccc" }} />
+                    <hr style={{ margin: "20px 0", border: `1px solid ${moduleGeneralDivider}` }} />
 
-                    <h3 style={{ borderBottom: "3px solid #FFCC00", paddingBottom: 6, color: "#000" }}>Exam</h3>
+                    <h3 style={{ borderBottom: `3px solid ${moduleHeaderDivider}`, paddingBottom: 6, color: moduleInHeaderFont }}>Exam</h3>
 
                     {isExamUnlocked ? (
                       <>
@@ -547,7 +557,7 @@ const Faq = (props: IFaqProps): JSX.Element => {
                         </div>
                       </>
                     ) : (
-                      <p style={{ fontStyle: "italic", color: "#999" }}>
+                      <p style={{ fontStyle: "italic", color: lockedFont }}>
                         Complete the quiz to unlock the exam
                       </p>
                     )}

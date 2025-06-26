@@ -1,14 +1,16 @@
-// NOTE: this is assigned by default
-
 import { WebPartContext } from "@microsoft/sp-webpart-base";
 // import { IFAQ } from "../../../interfaces";
-
+// ALERT : other defaults
 export interface IFaqProps {
-  description: string;
-  isDarkTheme: boolean;
-  environmentMessage: string;
-  hasTeamsContext: boolean;
-  userDisplayName: string;
   context: WebPartContext;
-  listGuid: string;
+  moduleHeaderFont: string;
+  moduleHeaderBackground: string;
+  moduleProgressBarUp: string;
+  moduleProgressBarDown: string;
+  moduleInHeaderFont: string;
+  moduleInnerBackground: string;
+  descriptionFont: string;
+  lockedFont: string;
+  moduleHeaderDivider: string;
+  moduleGeneralDivider: string;
 }
