@@ -72,6 +72,7 @@ const StatisticsTracker: React.FC<IStatisticsTrackerProps> =
       borderRadius: 16,
       padding: 24,
       display: 'flex',
+      flexWrap: 'wrap',
       justifyContent: 'space-between',
       alignItems: 'center',
       fontFamily: 'Segoe UI',
@@ -121,7 +122,7 @@ const StatisticsTracker: React.FC<IStatisticsTrackerProps> =
             <span style={{ fontSize: 20, color: '#fff' }}>⏰</span>
           </div>
           <div>
-            <div style={{ color: secondaryFont, fontWeight: 600 }}>Exams</div>
+            <div style={{ color: secondaryFont, fontWeight: 600 }}>Hexams</div>
             <div style={{ fontSize: 18, fontWeight: 700, color: iconBackground }}>{examCompletion}%</div>
           </div>
         </div>
@@ -131,6 +132,7 @@ const StatisticsTracker: React.FC<IStatisticsTrackerProps> =
       <div style={{
         width: 160,
         height: 160,
+        minWidth: 160,
         borderRadius: '50%',
         background: `conic-gradient(${progressUp} ${totalCompletion * 3.6}deg, ${ progressDown} 0deg)`,
         display: 'flex',
