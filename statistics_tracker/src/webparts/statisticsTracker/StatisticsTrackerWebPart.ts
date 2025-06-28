@@ -40,16 +40,15 @@ export default class StatisticsTrackerWebPart extends BaseClientSideWebPart<ISta
     ReactDom.render(element, this.domElement);
   }
 
-  // TODO : add defaults onInit()
   protected async onInit(): Promise<void> {
-    this.properties.webpartBackground = this.properties.webpartBackground ?? '#000',
-    this.properties.headerFont = this.properties.headerFont ?? '#ffcc00',
-    this.properties.secondaryFont = this.properties.secondaryFont ?? '#e6e6e6',
-    this.properties.iconBackground = this.properties.iconBackground ?? '#ffcc00',
-    this.properties.circleBackground = this.properties.circleBackground ?? '#fff',
-    this.properties.taskFont = this.properties.taskFont ?? '#888',
-    this.properties.progressDown = this.properties.progressDown ?? "#e6e6e6",
-    this.properties.progressUp = this.properties.progressUp ?? '#bf9902'
+    this.properties.webpartBackground = this.properties.webpartBackground ?? '#000';
+    this.properties.headerFont = this.properties.headerFont ?? '#ffcc00';
+    this.properties.secondaryFont = this.properties.secondaryFont ?? '#e6e6e6';
+    this.properties.iconBackground = this.properties.iconBackground ?? '#ffcc00';
+    this.properties.circleBackground = this.properties.circleBackground ?? '#fff';
+    this.properties.taskFont = this.properties.taskFont ?? '#888';
+    this.properties.progressDown = this.properties.progressDown ?? "#e6e6e6";
+    this.properties.progressUp = this.properties.progressUp ?? '#bf9902';
   }
 
   public onDispose(): void {
